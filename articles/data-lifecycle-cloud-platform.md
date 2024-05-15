@@ -592,9 +592,17 @@ If you prefer to visualize data in a spreadsheet, you can use [Google Sheets](h
 
 BigQuery also supports a range of third-party business intelligence tools and integrations, ranging from SaaS to desktop apps. For more information, see [BigQuery partners documentation](https://cloud.google.com/bigquery/partners/).
 
-Orchestration
--------------
+### Vertex AI
+add text here
+
+###  Orchestration
 
 Incorporating all of the elements of the data lifecycle into a set of connected and cohesive operations requires some form of orchestration. Orchestration layers are typically used to coordinate starting tasks, stopping tasks, copying files, and providing a dashboard to monitor data processing jobs. For example, a workflow could include copying files into Cloud Storage, starting a Cloud Dataproc processing job, and then sending notifications when processing results are stored in BigQuery.
 
 Orchestration workflows can range from simple to complex, depending on the processing tasks, and often use a centralized scheduling mechanism to run workflows automatically. There are several open-source orchestration tools that support GCP, such as [Luigi](https://github.com/spotify/luigi) and [Airflow](http://airflow.incubator.apache.org/). For custom orchestration apps, you can create an App Engine app that uses [built-in scheduled tasks](https://cloud.google.com/appengine/docs/python/config/cron) functionality to create and run workflows.
+
+### Cloud Scheduler
+add info here
+
+### Cloud Composer
+add info here
