@@ -1,5 +1,4 @@
-learning udemy ..............
+learning udemy ...............
 article read .
 
 Questions:
-- BigQuery vs BigLake

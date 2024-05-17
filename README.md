@@ -481,13 +481,4 @@ I'm focusing on hands-on practice now, and will try one last time on august.
 
 ```
 
-* Avro vs Gzip for compression
-* Dataflow troubleshooting
-* ML Question
-- outlier detection
-- Supervised vs Unsupervised
-- Reinforcement Learning
-* Access to give Dataflow - you need to ask a consultant to help your
-- developer role
-- Dataflow Developer Role
-- service account verse role
+* BigQuery vs BigTable
