@@ -1,30 +1,23 @@
 # Google - Professional Data Engineer
 
-A Professional Data Engineer enables data-driven decision making by collecting, transforming, and visualizing data. The Data Engineer designs, builds, maintains, and troubleshoots data processing systems with a particular emphasis on the security, reliability, fault-tolerance, scalability, fidelity, and efficiency of such systems.
+A Professional Data Engineer makes data usable and valuable for others by collecting, transforming, and publishing data. This individual evaluates and selects products and services to meet business and regulatory requirements. Engineer creates and manages robust data processing systems including the ability to design, build, deploy, monitor, maintain and secure data processing workloads.
 
-The Data Engineer also analyzes data to gain insight into business outcomes, builds statistical models to support decision-making, and creates machine learning models to automate and simplify key business processes.
-
-The Google Cloud Certified - Professional Data Engineer exam assesses your ability to:
-
-- Build and maintain data structures and databases
+The Professional Data Engineer exam assesses your ability to:
 - Design data processing systems
-- Analyze data and enable machine learning
-- Model business processes for analysis and optimization
-- Design for reliability
-- Visualize data and advocate policy
-- Design for security and compliance
+- Ingest and process the data
+- Store the data
+- Prepare and use data for analysis
+- Maintain and automate data workloads
 
 **This repository contains a collection of resources that will help you prepare.**
 
-## Review of tips
+## Tips
 - **TIP 1:** Create your own custom preparation plan using the resources in this course.
 
 - **TIP 2:** Use the Exam Guide outline to help identify what to study.
 Read through the exam guide outline.
 
 [https://cloud.google.com/certification/guides/data-engineer/](https://cloud.google.com/certification/guides/data-engineer/)
-
-The outline communicates how an authority thinks about and organizes the skills required of a Professional Data Engineer.
 
 Training tends to be organized in a ramp; basic concepts first, building into more complex and difficult concepts later. The Exam Guide is not training. So it is not organized for learning, or by importance, or by process. It is organized according to how a group of experts thinks about the job.
 
@@ -488,13 +481,4 @@ I'm focusing on hands-on practice now, and will try one last time on august.
 
 ```
 
-* Avro vs Gzip for compression
-* Dataflow troubleshooting
-* ML Question
-- outlier detection
-- Supervised vs Unsupervised
-- Reinforcement Learning
-* Access to give Dataflow - you need to ask a consultant to help your
-- developer role
-- Dataflow Developer Role
-- service account verse role
+* BigQuery vs BigTable
