@@ -3,3 +3,4 @@ Finished:
 
 - Try:
 - [GCP Cloud Guru learnings](https://www.pluralsight.com/cloud-guru/courses/google-certified-professional-data-engineer)
+- [Exam topics](https://www.examtopics.com/exams/google/professional-data-engineer/view/)
