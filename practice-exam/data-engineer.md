@@ -324,7 +324,7 @@ A is not correct because you should be using SSD storage for this scenario.
 C and D are not correct because creating a new Cloud Bigtable instance is extraneous and not needed to export, you can upgrade in place for nodes, but the storage type cannot be changed.
 
 ---
-
+xxxxxxxxxxxxx
 ##### As part of your backup plan, you set up regular snapshots of Compute Engine instances that are running. You want to be able to restore these snapshots using the fewest possible steps for replacement instances. What should you do?
 
 A. Export the snapshots to Cloud Storage. Create disks from the exported snapshot files. Create images from the new disks.
@@ -697,3 +697,148 @@ D. Use BigQuery to export the data for the table to a CSV file. Create a Google 
 Feedback
 Overall explanation
 Correct: B BigQuery has no quota on the DML statements. (Search Google - does bigquery have quota for update). Why not C: This is a one time activity and SQL is the easiest way to program it. DataFlow is way overkill for this. You will need to find an engineer who can develop DataFlow pipelines. Whereas, SQL is so much more widely known and easier. One of the great features about BigQuery is its SQL interface. Even for BigQueryML services.
+
+##### You have spent a few days loading data from comma-separated values (CSV) files into the Google BigQuery table CLICK_STREAM. The column DT stores the epoch time of click events. For convenience, you chose a simple schema where every field is treated as the STRING type. Now, you want to compute web session durations of users who visit your site, and you want to change its data type to the TIMESTAMP. You want to minimize the migration effort without making future queries computationally expensive. What should you do?
+
+A. Delete the table CLICK_STREAM, and then re-create it such that the column DT is of the TIMESTAMP type. Reload the data.
+B. Add a column TS of the TIMESTAMP type to the table CLICK_STREAM, and populate the numeric values from the column TS for each row. Reference the column TS instead of the column DT from now on.
+C. Create a view CLICK_STREAM_V, where strings from the column DT are cast into TIMESTAMP values. Reference the view CLICK_STREAM_V instead of the table CLICK_STREAM from now on.
+D. Add two columns to the table CLICK STREAM: TS of the TIMESTAMP type and IS_NEW of the BOOLEAN type. Reload all data in append mode. For each appended row, set the value of IS_NEW to true. For future queries, reference the column TS instead of the column DT, with the WHERE clause ensuring that the value of IS_NEW must be true.
+E(correct). Construct a query to return every row of the table CLICK_STREAM, while using the built-in function to cast strings from the column DT into TIMESTAMP values. Run the query into a destination table NEW_CLICK_STREAM, in which the column TS is the TIMESTAMP type. Reference the table NEW_CLICK_STREAM instead of the table CLICK_STREAM from now on. In the future, new data is loaded into the table NEW_CLICK_STREAM.
+
+Feedback
+E : Export and load data into a new table You can also change a column's data type by exporting your table data to Cloud Storage, and then loading the data into a new table with a schema definition that specifies the correct data type for the column. You can also use the load job to overwrite the existing table. Advantages You are not charged for the export job or the load job. Currently, BigQuery load and export jobs are free. If you use the load job to overwrite the original table, you incur storage costs for one table instead of two, but you lose the original data. Disadvantages If you load the data into a new table, you incur storage costs for the original table and the new table (unless you delete the old one). You incur costs for storing the exported data in Cloud Storage.
+
+##### You use a dataset in BigQuery for analysis. You want to provide third-party companies with access to the same dataset. You need to keep the costs of data sharing low and ensure that the data is current. Which solution should you choose?
+
+A(correct) Create an authorized view on the BigQuery table to control data access, and provide third-party companies with access to that view.
+B. Use Cloud Scheduler to export the data on a regular basis to Cloud Storage, and provide third-party companies with access to the bucket.
+C. Create a separate dataset in BigQuery that contains the relevant data to share, and provide third-party companies with access to the new dataset.
+D. Create a Cloud Dataflow job that reads the data in frequent time intervals, and writes it to the relevant BigQuery dataset or Cloud Storage bucket for third-party companies to use.
+
+Feedback
+https://cloud.google.com/bigquery/docs/share-access-views BigQuery is a petabyte-scale analytics data warehouse that you can use to run SQL queries over vast amounts of data in near realtime. Giving a view access to a dataset is also known as creating an authorized view in BigQuery’. An authorized view allows you to share query results with particular users and groups without giving them access to the underlying tables. You can also use the view's SQL query to restrict the columns (fields) the users are able to query. When you create the view, it must be created in a dataset separate from the source data queried by the view. Because you can assign access controls only at the dataset level, if the view is created in the same dataset as the source data, your data analysts would have access to both the view and the data.
+
+##### You set up a streaming data insert into a Redis cluster via a Kafka cluster. Both clusters are running on Compute Engine instances. You need to encrypt data at rest with encryption keys that you can create, rotate, and destroy as needed. What should you do?
+
+A. Create a dedicated service account, and use encryption at rest to reference your data stored in your Compute Engine cluster instances as part of your API service calls.
+Your answer is correct
+B(correct). Create encryption keys in Cloud Key Management Service. Use those keys to encrypt your data in all of the Compute Engine cluster instances.
+C. Create encryption keys locally. Upload your encryption keys to Cloud Key Management Service. Use those keys to encrypt your data in all of the Compute Engine cluster instances.
+D. Create encryption keys in Cloud Key Management Service. Reference those keys in your API service calls when accessing the data in your Compute Engine cluster instances.
+
+Feedback
+A makes no sense, you need to use your own keys. You don’t create keys locally and upload them, you should import it to make it work..using the kms public key…not just “uploading” it. C is also out. IT’s between B and D Cloud KMS is a cloud-hosted key management service that lets you manage cryptographic keys for your cloud services the same way you do on-premises, You can generate, use, rotate, and destroy cryptographic keys from there. Since you want to encrypt data at rest, is B, you don’t use them for any API calls. https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+
+##### You work for a manufacturing company that sources up to 750 different components, each from a different supplier. You've collected a labeled dataset that has on average 1000 examples for each unique component. Your team wants to implement an app to help warehouse workers recognize incoming components based on a photo of the component. You want to implement the first working version of this app (as Proof-Of-Concept) within a few working days. What should you do?
+
+A(correct). Use Cloud Vision AutoML with the existing dataset.
+B. Use Cloud Vision AutoML, but reduce your dataset twice.
+C. Use Cloud Vision API by providing custom labels as recognition hints.
+D. Train your own image recognition model leveraging transfer learning techniques.
+
+##### You work for a car manufacturer and have set up a data pipeline using Google Cloud Pub/Sub to capture anomalous sensor events. You are using a push subscription in Cloud Pub/Sub that calls a custom HTTPS endpoint that you have created to take action of these anomalous events as they occur. Your customHTTPS endpoint keeps getting an inordinate amount of duplicate messages. What is the most likely cause of these duplicate messages?
+
+A. The message body for the sensor event is too large.
+B. Your custom endpoint has an out-of-date SSL certificate.
+C. The Cloud Pub/Sub topic has too many messages published to it.
+D(correct). Your custom endpoint is not acknowledging messages within the acknowledgement deadline.
+
+##### Your infrastructure includes a set of YouTube channels. You have been tasked with creating a process for sending the YouTube channel data to Google Cloud for analysis. You want to design a solution that allows your world-wide marketing teams to perform ANSI SQL and other types of analysis on up-to-date YouTube channels log data. How should you set up the log data transfer into Google Cloud?
+
+A(correct). Use Storage Transfer Service to transfer the offsite backup files to a Cloud Storage Multi-Regional storage bucket as a final destination.
+B. Use Storage Transfer Service to transfer the offsite backup files to a Cloud Storage Regional bucket as a final destination.
+C. Use BigQuery Data Transfer Service to transfer the offsite backup files to a Cloud Storage Multi-Regional storage bucket as a final destination.
+D. Use BigQuery Data Transfer Service to transfer the offsite backup files to a Cloud Storage Regional storage bucket as a final destination.
+
+Feedback
+Correct Answer: A Destination is GCS and having multi-regional so A is the best option available. Even since BigQuery Data Transfer Service initially supports Google application sources like Google Ads, Campaign Manager, Google Ad Manager and YouTube but it does not support destination anything other than bq data set
+
+##### You work for a bank. You have a labelled dataset that contains information on already granted loan application and whether these applications have been defaulted. You have been asked to train a model to predict default rates for credit applicants.What should you do?
+
+A. Increase the size of the dataset by collecting additional data.
+B. Train a linear regression to predict a credit default risk score.
+Your answer is incorrect
+C. Remove the bias from the data and collect applications that have been declined loans.
+Correct answer
+D(correct). Match loan applicants with their social profiles to enable feature engineering.
+
+Feedback
+D. A - Incorrect. There's no indication that size was the problem. B - Incorrect. The model is likely to be a classification model. So linear is not the best fit. C - Incorrect. You wouldn't need declined applications. How can you default without getting an approved application. It's not relevant.
+
+##### You have a query that filters a BigQuery table using a WHERE clause on timestamp and ID columns. By using bq query "" -dry_run you learn that the query triggers a full scan of the table, even though the filter on timestamp and ID select a tiny fraction of the overall data. You want to reduce the amount of data scanned by BigQuery with minimal changes to existing SQL queries. What should you do?
+
+A. Create a separate table for each ID.
+B. Use the LIMIT keyword to reduce the number of rows returned.
+Your answer is correct
+C(correct). Recreate the table with a partitioning column and clustering column.
+D. Use the bq query - -maximum_bytes_billed flag to restrict the number of bytes billed.
+
+Feedback
+https://cloud.google.com/bigquery/docs/best-practices-costs
+
+##### Flowlogistic Case Study - Company Overview - Flowlogistic is a leading logistics and supply chain provider. They help businesses throughout the world manage their resources and transport them to their final destination. The company has grown rapidly, expanding their offerings to include rail, truck, aircraft, and oceanic shipping. Company Background - The company started as a regional trucking company, and then expanded into other logistics market. Because they have not updated their infrastructure, managing and tracking orders and shipments has become a bottleneck. To improve operations, Flowlogistic developed proprietary technology for tracking shipments in real time at the parcel level. However, they are unable to deploy it because their technology stack, based on Apache Kafka, cannot support the processing volume. In addition, Flowlogistic wants to further analyze their orders and shipments to determine how best to deploy their resources. Solution Concept - Flowlogistic wants to implement two concepts using the cloud: ✑ Use their proprietary technology in a real-time inventory-tracking system that indicates the location of their loads ✑ Perform analytics on all their orders and shipment logs, which contain both structured and unstructured data, to determine how best to deploy resources, which markets to expand info. They also want to use predictive analytics to learn earlier when a shipment will be delayed. Existing Technical Environment - Flowlogistic architecture resides in a single data center: ✑ Databases 8 physical servers in 2 clusters - SQL Server "" user data, inventory, static data 3 physical servers - Cassandra "" metadata, tracking messages 10 Kafka servers "" tracking message aggregation and batch insert ✑ Application servers "" customer front end, middleware for order/customs 60 virtual machines across 20 physical servers - Tomcat "" Java services - Nginx "" static content - Batch servers ✑ Storage appliances - iSCSI for virtual machine (VM) hosts - Fibre Channel storage area network (FC SAN) "" SQL server storage - Network-attached storage (NAS) image storage, logs, backups ✑ 10 Apache Hadoop /Spark servers - Core Data Lake - Data analysis workloads ✑ 20 miscellaneous servers - Jenkins, monitoring, bastion hosts, Business Requirements - ✑ Build a reliable and reproducible environment with scaled panty of production. ✑ Aggregate data in a centralized Data Lake for analysis ✑ Use historical data to perform predictive analytics on future shipments ✑ Accurately track every shipment worldwide using proprietary technology ✑ Improve business agility and speed of innovation through rapid provisioning of new resources ✑ Analyze and optimize architecture for performance in the cloud Migrate fully to the cloud if all other requirements are met Technical Requirements - ✑ Handle both streaming and batch data ✑ Migrate existing Hadoop workloads ✑ Ensure architecture is scalable and elastic to meet the changing demands of the company. ✑ Use managed services whenever possible ✑ Encrypt data flight and at rest ✑ Connect a VPN between the production data center and cloud environment SEO Statement - We have grown so quickly that our inability to upgrade our infrastructure is really hampering further growth and efficiency. We are efficient at moving shipments around the world, but we are inefficient at moving data around. We need to organize our information so we can more easily understand where our customers are and what they are shipping. CTO Statement - IT has never been a priority for us, so as our data has grown, we have not invested enough in our technology. I have a good staff to manage IT, but they are so busy managing our infrastructure that I cannot get them to do the things that really matter, such as organizing our data, building the analytics, and figuring out how to implement the CFO' s tracking technology. CFO Statement - Part of our competitive advantage is that we penalize ourselves for late shipments and deliveries. Knowing where out shipments are at all times has a direct correlation to our bottom line and profitability. Additionally, I don't want to commit capital to building out a server environment. Flowlogistic's management has determined that the current Apache Kafka servers cannot handle the data volume for their real-time inventory tracking system. You need to build a new system on Google Cloud Platform (GCP) that will feed the proprietary tracking software. The system must be able to ingest data from a variety of global sources, process and query in real-time, and store the data reliably. Which combination of GCP products should you choose?
+
+
+A(correct). Cloud Pub/Sub, Cloud Dataflow, and Cloud Storage
+B. Cloud Pub/Sub, Cloud Dataflow, and Local SSD
+C. Cloud Pub/Sub, Cloud SQL, and Cloud Storage
+D. Cloud Load Balancing, Cloud Dataflow, and Cloud Storage
+
+##### Your company needs to upload their historic data to Cloud Storage. The security rules don't allow access from external IPs to their on-premises resources. After an initial upload, they will add new data from existing on-premises applications every day. What should they do?
+
+A(correct). Execute gsutil rsync from the on-premises servers.
+Your answer is incorrect
+B. Use Cloud Dataflow and write the data to Cloud Storage.
+C. Write a job template in Cloud Dataproc to perform the data transfer.
+D. Install an FTP server on a Compute Engine VM to receive the files and move them to Cloud Storage.
+
+Feedback
+A is the better and most simple IF there is no problem in having gsutil in our servers. B and C no way, the comms will go GCP–Home, which sais is not allowed. D is valid, we can send the files with http://ftp…BUT ftp is not secure, and we’ll need to move them to the cloud storage afterwards, which is not detailed in the answer. https://cloud.google.com/storage/docs/gsutil/commands/rsync
+
+##### You are implementing security best practices on your data pipeline. Currently, you are manually executing jobs as the Project Owner. You want to automate these jobs by taking nightly batch files containing non-public information from Google Cloud Storage, processing them with a Spark Scala job on a Google CloudDataproc cluster, and depositing the results into Google BigQuery.How should you securely run this workload?
+
+A. Restrict the Google Cloud Storage bucket so only you can see the files
+B. Grant the Project Owner role to a service account, and run the job with it
+Your answer is correct
+C(correct). Use a service account with the ability to read the batch files and to write to BigQuery
+D. Use a user account with the Project Viewer role on the Cloud Dataproc cluster to read the batch files and write to BigQuery
+
+Feedback
+Data owners cant create jobs or queries. -> B out We need service Account -> D out Access only granting me does not solve the problem -> A out The answer is C. ( Minimum rights to perform the job)
+
+##### Which of the following are feature engineering techniques? (Select 2 answers)
+A. Hidden feature layers
+Your selection is incorrect
+B. Feature prioritization
+C(correct). Crossed feature columns
+D(correct). Bucketization of a continuous feature
+
+Feedback
+Selecting and crafting the right set of feature columns is key to learning an effective model. Bucketization is a process of dividing the entire range of a continuous feature into a set of consecutive bins/buckets, and then converting the original numerical feature into a bucket ID (as a categorical feature) depending on which bucket that value falls into. Using each base feature column separately may not be enough to explain the data. To learn the differences between different feature combinations, we can add crossed feature columns to the model. 
+Reference: https://www.tensorflow.org/tutorials/wide#selecting_and_engineering_features_for_the_model
+
+##### You are designing a cloud-native historical data processing system to meet the following conditions:✑ The data being analyzed is in CSV, Avro, and PDF formats and will be accessed by multiple analysis tools including Cloud Dataproc, BigQuery, and ComputeEngine.✑ A streaming data pipeline stores new data daily.✑ Peformance is not a factor in the solution.✑ The solution design should maximize availability.How should you design data storage for this solution?
+
+A. Create a Cloud Dataproc cluster with high availability. Store the data in HDFS, and peform analysis as needed.
+B. Store the data in BigQuery. Access the data using the BigQuery Connector on Cloud Dataproc and Compute Engine.
+C. Store the data in a regional Cloud Storage bucket. Access the bucket directly using Cloud Dataproc, BigQuery, and Compute Engine.
+D(correct). Store the data in a multi-regional Cloud Storage bucket. Access the data directly using Cloud Dataproc, BigQuery, and Compute Engine.
+
+##### You are implementing several batch jobs that must be executed on a schedule. These jobs have many interdependent steps that must be executed in a specific order. Portions of the jobs involve executing shell scripts, running Hadoop jobs, and running queries in BigQuery. The jobs are expected to run for many minutes up to several hours. If the steps fail, they must be retried a fixed number of times. Which service should you use to manage the execution of these jobs?
+A. Cloud Scheduler
+B. Cloud Dataflow
+C. Cloud Functions
+D(correct). Cloud Composer
+
+Feedback
+D: the main point is that Cloud Composer should be used when there is inter-dependencies between the job, e.g. we need the output of a job to start another whenever the first finished, and use dependencies coming from first job.
+
+##### You are managing a Cloud Dataproc cluster. You need to make a job run faster while minimizing costs, without losing work in progress on your clusters. What should you do?
+A. Increase the cluster size with more non-preemptible workers.
+B. Increase the cluster size with preemptible worker nodes, and configure them to forcefully decommission.
+C. Increase the cluster size with preemptible worker nodes, and use Cloud Stackdriver to trigger a script to preserve work.
+D(correct). Increase the cluster size with preemptible worker nodes, and configure them to use graceful decommissioning.
+
+Feedback
+D After creating a Dataproc cluster, you can adjust ("scale") the cluster by increasing or decreasing the number of primary or secondary worker nodes in the cluster. You can scale a Dataproc cluster at any time, even when jobs are running on the cluster. Use Dataproc Autoscaling. Instead of manually scaling clusters, enable Autoscaling to have Dataproc set the "right" number of workers for your workloads. Why scale a Dataproc cluster? to increase the number of workers to make a job run faster to decrease the number of workers to save money (see Graceful Decommissioning as an option to use when downsizing a cluster to avoid losing work in progress). to increase the number of nodes to expand available Hadoop Distributed Filesystem (HDFS) storage
