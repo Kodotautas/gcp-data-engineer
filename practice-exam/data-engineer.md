@@ -842,3 +842,84 @@ D(correct). Increase the cluster size with preemptible worker nodes, and configu
 
 Feedback
 D After creating a Dataproc cluster, you can adjust ("scale") the cluster by increasing or decreasing the number of primary or secondary worker nodes in the cluster. You can scale a Dataproc cluster at any time, even when jobs are running on the cluster. Use Dataproc Autoscaling. Instead of manually scaling clusters, enable Autoscaling to have Dataproc set the "right" number of workers for your workloads. Why scale a Dataproc cluster? to increase the number of workers to make a job run faster to decrease the number of workers to save money (see Graceful Decommissioning as an option to use when downsizing a cluster to avoid losing work in progress). to increase the number of nodes to expand available Hadoop Distributed Filesystem (HDFS) storage
+
+##### You work for a manufacturing plant that batches application log files together into a single log file once a day at 2:00 AM. You have written a Google CloudDataflow job to process that log file. You need to make sure the log file in processed once per day as inexpensively as possible. What should you do?
+
+A. Change the processing job to use Google Cloud Dataproc instead.
+B. Manually start the Cloud Dataflow job each morning when you get into the office.
+Correct answer
+C(correct). Create a cron job with Google App Engine Cron Service to run the Cloud Dataflow job.
+Your answer is incorrect
+D. Configure the Cloud Dataflow job as a streaming job so that it processes the log data immediately.
+
+Feedback
+Answer is C. https://cloud.google.com/appengine/docs/flexible/nodejs/scheduling-jobs-with-cron-yaml
+
+
+##### You have enabled the free integration between Firebase Analytics and Google BigQuery. Firebase now automatically creates a new table daily in BigQuery in the format app_events_YYYYMMDD. You want to query all of the tables for the past 30 days in legacy SQL. What should you do?
+
+A(correct). Use the TABLE_DATE_RANGE function
+Your answer is incorrect
+B. Use the WHERE_PARTITIONTIME pseudo column
+C. Use WHERE date BETWEEN YYYY-MM-DD AND YYYY-MM-DD
+D. Use SELECT IF.(date >= YYYY-MM-DD AND date <= YYYY-MM-DD)
+
+Feedback
+https://cloud.google.com/blog/products/gcp/using-bigquery-and-firebase-analytics-to-understand-your-mobile-app?hl=am
+
+##### A data scientist has created a BigQuery ML model and asks you to create an ML pipeline to serve predictions. You have a REST API application with the requirement to serve predictions for an individual user ID with latency under 100 milliseconds. You use the following query to generate predictions: SELECT predicted_label, user_id FROM ML.PREDICT (MODEL "˜dataset.model', table user_features). How should you create the ML pipeline?
+
+A. Add a WHERE clause to the query, and grant the BigQuery Data Viewer role to the application service account.
+Your answer is incorrect
+B. Create an Authorized View with the provided query. Share the dataset that contains the view with the application service account.
+C. Create a Cloud Dataflow pipeline using BigQueryIO to read results from the query. Grant the Dataflow Worker role to the application service account.
+Correct answer
+D(correct). Create a Cloud Dataflow pipeline using BigQueryIO to read predictions for all users from the query. Write the results to Cloud Bigtable using BigtableIO. Grant the Bigtable Reader role to the application service account so that the application can read predictions for individual users from Cloud Bigtable.
+
+##### MJTelco Case Study -Company Overview -MJTelco is a startup that plans to build networks in rapidly growing, underserved markets around the world. The company has patents for innovative optical communications hardware. Based on these patents, they can create many reliable, high-speed backbone links with inexpensive hardware.Company Background -Founded by experienced telecom executives, MJTelco uses technologies originally developed to overcome communications challenges in space. Fundamental to their operation, they need to create a distributed data infrastructure that drives real-time analysis and incorporates machine learning to continuously optimize their topologies. Because their hardware is inexpensive, they plan to overdeploy the network allowing them to account for the impact of dynamic regional politics on location availability and cost.Their management and operations teams are situated all around the globe creating many-to-many relationship between data consumers and provides in their system. After careful consideration, they decided public cloud is the perfect environment to support their needs.Solution Concept -MJTelco is running a successful proof-of-concept (PoC) project in its labs. They have two primary needs:✑ Scale and harden their PoC to support significantly more data flows generated when they ramp to more than 50,000 installations.✑ Refine their machine-learning cycles to verify and improve the dynamic models they use to control topology definition.MJTelco will also use three separate operating environments "" development/test, staging, and production "" to meet the needs of running experiments, deploying new features, and serving production customers.Business Requirements -✑ Scale up their production environment with minimal cost, instantiating resources when and where needed in an unpredictable, distributed telecom user community.✑ Ensure security of their proprietary data to protect their leading-edge machine learning and analysis.✑ Provide reliable and timely access to data for analysis from distributed research workers✑ Maintain isolated environments that support rapid iteration of their machine-learning models without affecting their customers.Technical Requirements -✑ Ensure secure and efficient transport and storage of telemetry data✑ Rapidly scale instances to support between 10,000 and 100,000 data providers with multiple flows each.✑ Allow analysis and presentation against data tables tracking up to 2 years of data storing approximately 100m records/day✑ Support rapid iteration of monitoring infrastructure focused on awareness of data pipeline problems both in telemetry flows and in production learning cycles.CEO Statement -Our business model relies on our patents, analytics and dynamic machine learning. Our inexpensive hardware is organized to be highly reliable, which gives us cost advantages. We need to quickly stabilize our large distributed data pipelines to meet our reliability and capacity commitments.CTO Statement -Our public cloud services must operate as advertised. We need resources that scale and keep our data secure. We also need environments in which our data scientists can carefully study and quickly adapt our models. Because we rely on automation to process our data, we also need our development and test environments to work as we iterate.CFO Statement -The project is too large for us to maintain the hardware and software required for the data and analysis. Also, we cannot afford to staff an operations team to monitor so many data feeds, so we will rely on automation and infrastructure. Google Cloud's machine learning will allow our quantitative researchers to work on our high-value problems instead of problems with our data pipelines.MJTelco needs you to create a schema in Google Bigtable that will allow for the historical analysis of the last 2 years of records. Each record that comes in is sent every 15 minutes, and contains a unique identifier of the device and a data record. The most common query is for all the data for a given device for a given day.Which schema should you use?
+A. Rowkey: date#device_id Column data: data_point
+B. Rowkey: date Column data: device_id, data_point
+Your answer is correct
+C(correct). Rowkey: device_id Column data: date, data_point
+D. Rowkey: data_point Column data: device_id, date
+E. Rowkey: date#data_point Column data: device_id
+
+##### Each analytics team in your organization is running BigQuery jobs in their own projects. You want to enable each team to monitor slot usage within their projects.What should you do?
+A. Create a Stackdriver Monitoring dashboard based on the BigQuery metric query/scanned_bytes
+Your answer is correct
+B(correct). Create a Stackdriver Monitoring dashboard based on the BigQuery metric slots/allocated_for_project
+C. Create a log export for each project, capture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Stackdriver Monitoring dashboard based on the custom metric
+D. Create an aggregated log export at the organization level, capture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Stackdriver Monitoring dashboard based on the custom metric
+
+Feedback
+Vote for B A - Eliminated (it will not tell, anything about slots, it will show, which query scan how many data) B - Correct METRIC given slots/allocated_for_project GA (which is used to tell Slots used by project) Number of BigQuery slots currently allocated for query jobs in the project. https://cloud.google.com/monitoring/api/metrics_gcp C - No need for custom metric, we have already pre-defined metric for the given requirement. D - Eliminated (we need slots usage per project, not organization level)
+
+##### You launched a new gaming app almost three years ago. You have been uploading log files from the previous day to a separate Google BigQuery table with the table name format LOGS_yyyymmdd. You have been using table wildcard functions to generate daily and monthly reports for all time ranges. Recently, you discovered that some queries that cover long date ranges are exceeding the limit of 1,000 tables and failing. How can you resolve this issue?
+A. Convert all daily log tables into date-partitioned tables
+Correct answer
+B. Convert the sharded tables into a single partitioned table
+C. Enable query caching so you can cache data from previous months
+Your answer is incorrect
+D. Create separate views to cover each month, and query from these views
+
+Feedback
+https://cloud.google.com/bigquery/docs/creating-partitioned-tables#converting_date-sharded_tables_into_ingestion-time_partitioned_tables
+
+##### You currently have a single on-premises Kafka cluster in a data center in the us-east region that is responsible for ingesting messages from IoT devices globally.Because large parts of globe have poor internet connectivity, messages sometimes batch at the edge, come in all at once, and cause a spike in load on yourKafka cluster. This is becoming difficult to manage and prohibitively expensive. What is the Google-recommended cloud native architecture for this scenario?
+A. Edge TPUs as sensor devices for storing and transmitting the messages.
+Your answer is incorrect
+B. Cloud Dataflow connected to the Kafka cluster to scale the processing of incoming messages.
+Correct answer
+C(correct). An IoT gateway connected to Cloud Pub/Sub, with Cloud Dataflow to read and process the messages from Cloud Pub/Sub.
+D. A Kafka cluster virtualized on Compute Engine in us-east with Cloud Load Balancing to connect to the devices around the world.
+
+##### You operate a logistics company, and you want to improve event delivery reliability for vehicle-based sensors. You operate small data centers around the world to capture these events, but leased lines that provide connectivity from your event collection infrastructure to your event processing infrastructure are unreliable, with unpredictable latency. You want to address this issue in the most cost-effective way. What should you do?
+A. Deploy small Kafka clusters in your data centers to buffer events.
+Your answer is incorrect
+B. Have the data acquisition devices publish data to Cloud Pub/Sub.
+Correct answer
+C(correct). Establish a Cloud Interconnect between all remote data centers and Google.
+D. Write a Cloud Dataflow pipeline that aggregates all data in session windows.
+
+Feedback
+C. This is a tricky one. The issue here is the unreliable connection between data collection and data processing infrastructure, and to resolve it in a cost-effective manner. However, it also mentions that the company is using leased lines. I think replacing the leased lines with Cloud InterConnect would solve the problem, and hopefully not be an added expense. https://cloud.google.com/interconnect/docs/concepts/overview
