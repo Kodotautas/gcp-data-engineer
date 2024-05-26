@@ -923,3 +923,219 @@ D. Write a Cloud Dataflow pipeline that aggregates all data in session windows.
 
 Feedback
 C. This is a tricky one. The issue here is the unreliable connection between data collection and data processing infrastructure, and to resolve it in a cost-effective manner. However, it also mentions that the company is using leased lines. I think replacing the leased lines with Cloud InterConnect would solve the problem, and hopefully not be an added expense. https://cloud.google.com/interconnect/docs/concepts/overview
+
+##### You work for an advertising company, and you've developed a Spark ML model to predict click-through rates at advertisement blocks. You've been developing everything at your on-premises data center, and now your company is migrating to Google Cloud. Your data center will be closing soon, so a rapid lift-and-shift migration is necessary. However, the data you've been using will be migrated to migrated to BigQuery. You periodically retrain your Spark ML models, so you need to migrate existing training pipelines to Google Cloud. What should you do?
+A. Use Cloud ML Engine for training existing Spark ML models
+B. Rewrite your models on TensorFlow, and start using Cloud ML Engine
+Correct answer
+C(correct). Use Cloud Dataproc for training existing Spark ML models, but start reading data directly from BigQuery
+D. Spin up a Spark cluster on Compute Engine, and train Spark ML models on the data exported from BigQuery
+Overall explanation
+Right option is C. https://cloud.google.com/dataproc/docs/tutorials/bigquery-sparkml
+
+##### You are creating a model to predict housing prices. Due to budget constraints, you must run it on a single resource-constrained virtual machine. Which learning algorithm should you use?
+A(correct). Linear regression
+B. Logistic classification
+C. Recurrent neural network
+D. Feedforward neural network
+
+Overall explanation
+correct answer -> Linear Regression Linear regression is a statistical method that allows to summarize and study relationships between two continuous (quantitative) variables: One variable, denoted X, is regarded as the independent variable. The other variable denoted y is regarded as the dependent variable. Linear regression uses one independent variable X to explain or predict the outcome of the dependent variable y. Whenever you are told to predict some future value of a process which is currently running, you can go with a regression algorithm. Refeerence: https://towardsdatascience.com/do-you-know-how-to-choose-the-right-machine-learning-algorithm-among-7-different-types-295d0b0c7f60
+
+##### Which of these statements about exporting data from BigQuery is false?
+A. To export more than 1 GB of data, you need to put a wildcard in the destination filename.
+B. The only supported export destination is Google Cloud Storage.
+Correct answer
+C(correct). Data can only be exported in JSON or Avro format.
+D. The only compression option available is GZIP.
+
+Overall explanation
+Correct: C When you export data from BigQuery, note the following: You cannot export table data to a local file, to Google Sheets, or to Google Drive. The only supported export location is Cloud Storage. For information on saving query results, see Downloading and saving query results. You can export up to 1 GB of table data to a single file. If you are exporting more than 1 GB of data, use a wildcard to export the data into multiple files. When you export data to multiple files, the size of the files will vary. You cannot export nested and repeated data in CSV format. Nested and repeated data is supported for Avro and JSON exports. When you export data in JSON format, INT64 (integer) data types are encoded as JSON strings to preserve 64-bit precision when the data is read by other systems. You cannot export data from multiple tables in a single export job. You cannot choose a compression type other than GZIP when you export data using the Cloud Console or the classic BigQuery web UI.
+
+##### You are deploying 10,000 new Internet of Things devices to collect temperature data in your warehouses globally. You need to process, store and analyze these very large datasets in real time. What should you do?
+A. Send the data to Google Cloud Datastore and then export to BigQuery.
+B(correct). Send the data to Google Cloud Pub/Sub, stream Cloud Pub/Sub to Google Cloud Dataflow, and store the data in Google BigQuery.
+C. Send the data to Cloud Storage and then spin up an Apache Hadoop cluster as needed in Google Cloud Dataproc whenever analysis is required.
+D. Export logs in batch to Google Cloud Storage and then spin up a Google Cloud SQL instance, import the data from Cloud Storage, and run an analysis as needed.
+Overall explanation
+B is more correct than other options so B is the answer. But if this is actual use case you have to deal with use Cloud BigTable instead of bigquery. So the pipeline will be like this. IOT-Devices -> Cloud Pub/Sub -> Cloud BigTable -> Cloud Data Studio (For real-time analytics)
+
+##### You have Cloud Functions written in Node.js that pull messages from Cloud Pub/Sub and send the data to BigQuery. You observe that the message processing rate on the Pub/Sub topic is orders of magnitude higher than anticipated, but there is no error logged in Stackdriver Log Viewer. What are the two most likely causes of this problem? (Choose two.)
+A. Publisher throughput quota is too small.
+Your selection is incorrect
+B. Total outstanding messages exceed the 10-MB maximum.
+Correct selection
+C(correct). Error handling in the subscriber code is not handling run-time errors properly.
+D. The subscriber code cannot keep up with the messages.
+Your selection is correct
+E(correct). The subscriber code does not acknowledge the messages that it pulls.
+
+Overall explanation
+Answer: C, E Description: C, E: By not acknowleding the pulled message, this result in it be putted back in Cloud Pub/Sub, meaning the messages accumulate instead of being consumed and removed from Pub/Sub. The same thing can happen ig the subscriber maintains the lease on the message it receives in case of an error. This reduces the overall rate of processing because messages get stuck on the first subscriber. Also, errors in Cloud Function do not show up in Stackdriver Log Viewer if they are not correctly handled. A: No problem with publisher rate as the observed result is a higher number of messages and not a lower number. B: if messages exceed the 10MB maximum, they cannot be published. D: Cloud Functions automatically scales so they should be able to keep up.
+
+##### Which of the following are examples of hyperparameters? (Select 2 answers.)
+A(correct). Number of hidden layers
+Correct selection
+B(correct). Number of nodes in each hidden layer
+C. Biases
+Your selection is incorrect
+D. Weights
+
+Overall explanation
+If model parameters are variables that get adjusted by training with existing data, your hyperparameters are the variables about the training process itself. For example, part of setting up a deep neural network is deciding how many "hidden" layers of nodes to use between the input layer and the output layer, as well as how many nodes each layer should use. These variables are not directly related to the training data at all. They are configuration variables. Another difference is that parameters change during a training job, while the hyperparameters are usually constant during a job. Weights and biases are variables that get adjusted during the training process, so they are not hyperparameters. Reference: https://cloud.google.com/ml-engine/docs/hyperparameter-tuning-overview
+
+##### After migrating ETL jobs to run on BigQuery, you need to verify that the output of the migrated jobs is the same as the output of the original. You've loaded a table containing the output of the original job and want to compare the contents with output from the migrated job to show that they are identical. The tables do not contain a primary key column that would enable you to join them together for comparison.What should you do?
+A. Select random samples from the tables using the RAND() function and compare the samples.
+B. Select random samples from the tables using the HASH() function and compare the samples.
+Correct answer
+C(correct). Use a Dataproc cluster and the BigQuery Hadoop connector to read the data from each table and calculate a hash from non-timestamp columns of the table after sorting. Compare the hashes of each table.
+Your answer is incorrect
+D. Create stratified random samples using the OVER() function and compare equivalent samples from each table.
+
+Overall explanation
+C Using Cloud Storage with big data Cloud Storage is a key part of storing and working with Big Data on Google Cloud. Examples include: Loading data into BigQuery. Using Dataproc, which automatically installs the HDFS-compatible Cloud Storage connector, enabling the use of Cloud Storage buckets in parallel with HDFS. Using a bucket to hold staging files and temporary data for Dataflow pipelines. For Dataflow, a Cloud Storage bucket is required. For BigQuery and Dataproc, using a Cloud Storage bucket is optional but recommended. gsutil is a command-line tool that enables you to work with Cloud Storage buckets and objects easily and robustly, in particular in big data scenarios. For example, with gsutil you can copy many files in parallel with a single command, copy large files efficiently, calculate checksums on your data, and measure performance from your local computer to Cloud Storage.
+
+##### MJTelco Case Study - Company Overview - MJTelco is a startup that plans to build networks in rapidly growing, underserved markets around the world. The company has patents for innovative optical communications hardware. Based on these patents, they can create many reliable, high-speed backbone links with inexpensive hardware. Company Background - Founded by experienced telecom executives, MJTelco uses technologies originally developed to overcome communications challenges in space. Fundamental to their operation, they need to create a distributed data infrastructure that drives real-time analysis and incorporates machine learning to continuously optimize their topologies. Because their hardware is inexpensive, they plan to overdeploy the network allowing them to account for the impact of dynamic regional politics on location availability and cost. Their management and operations teams are situated all around the globe creating many-to-many relationship between data consumers and provides in their system. After careful consideration, they decided public cloud is the perfect environment to support their needs. Solution Concept - MJTelco is running a successful proof-of-concept (PoC) project in its labs. They have two primary needs: ✑ Scale and harden their PoC to support significantly more data flows generated when they ramp to more than 50,000 installations. ✑ Refine their machine-learning cycles to verify and improve the dynamic models they use to control topology definition. MJTelco will also use three separate operating environments "" development/test, staging, and production "" to meet the needs of running experiments, deploying new features, and serving production customers. Business Requirements - ✑ Scale up their production environment with minimal cost, instantiating resources when and where needed in an unpredictable, distributed telecom user community. ✑ Ensure security of their proprietary data to protect their leading-edge machine learning and analysis. ✑ Provide reliable and timely access to data for analysis from distributed research workers ✑ Maintain isolated environments that support rapid iteration of their machine-learning models without affecting their customers. Technical Requirements - ✑ Ensure secure and efficient transport and storage of telemetry data ✑ Rapidly scale instances to support between 10,000 and 100,000 data providers with multiple flows each. ✑ Allow analysis and presentation against data tables tracking up to 2 years of data storing approximately 100m records/day ✑ Support rapid iteration of monitoring infrastructure focused on awareness of data pipeline problems both in telemetry flows and in production learning cycles. CEO Statement - Our business model relies on our patents, analytics and dynamic machine learning. Our inexpensive hardware is organized to be highly reliable, which gives us cost advantages. We need to quickly stabilize our large distributed data pipelines to meet our reliability and capacity commitments. CTO Statement - Our public cloud services must operate as advertised. We need resources that scale and keep our data secure. We also need environments in which our data scientists can carefully study and quickly adapt our models. Because we rely on automation to process our data, we also need our development and test environments to work as we iterate. CFO Statement - The project is too large for us to maintain the hardware and software required for the data and analysis. Also, we cannot afford to staff an operations team to monitor so many data feeds, so we will rely on automation and infrastructure. Google Cloud's machine learning will allow our quantitative researchers to work on our high-value problems instead of problems with our data pipelines. You need to compose visualizations for operations teams with the following requirements: ✑ The report must include telemetry data from all 50,000 installations for the most resent 6 weeks (sampling once every minute). ✑ The report must not be more than 3 hours delayed from live data. ✑ The actionable report should only show suboptimal links. ✑ Most suboptimal links should be sorted to the top. ✑ Suboptimal links can be grouped and filtered by regional geography. ✑ User response time to load the report must be <5 seconds. Which approach meets the requirements?
+A. Load the data into Google Sheets, use formulas to calculate a metric, and use filters/sorting to show only suboptimal links in a table.
+B. Load the data into Google BigQuery tables, write Google Apps Script that queries the data, calculates the metric, and shows only suboptimal rows in a table in Google Sheets.
+C(correct). Load the data into Google Cloud Datastore tables, write a Google App Engine Application that queries all rows, applies a function to derive the metric, and then renders results in a table using the Google charts and visualization API.
+D. Load the data into Google BigQuery tables, write a Google Data Studio 360 report that connects to your data, calculates a metric, and then uses a filter expression to show only suboptimal rows in a table.
+
+##### The _________ for Cloud Bigtable makes it possible to use Cloud Bigtable in a Cloud Dataflow pipeline.
+A(correct). Cloud Dataflow connector
+B. DataFlow SDK
+C. BiqQuery API
+D. BigQuery Data Transfer Service
+
+Overall explanation
+The Cloud Dataflow connector for Cloud Bigtable makes it possible to use Cloud Bigtable in a Cloud Dataflow pipeline. You can use the connector for both batch and streaming operations. Reference: https://cloud.google.com/bigtable/docs/dataflow-hbase
+
+##### What are two of the benefits of using denormalized data structures in BigQuery?
+A. Reduces the amount of data processed, reduces the amount of storage required
+Correct answer
+B(correct). Increases query speed, makes queries simpler
+C. Reduces the amount of storage required, increases query speed
+D. Reduces the amount of data processed, increases query speed
+
+Overall explanation
+Denormalization increases query speed for tables with billions of rows because BigQuery's performance degrades when doing JOINs on large tables, but with a denormalized data structure, you don't have to use JOINs, since all of the data has been combined into one table. Denormalization also makes queries simpler because you do not have to use JOIN clauses. Denormalization increases the amount of data processed and the amount of storage required because it creates redundant data. Reference: https://cloud.google.com/solutions/bigquery-data-warehouse#denormalizing_data
+
+##### MJTelco Case Study -Company Overview -MJTelco is a startup that plans to build networks in rapidly growing, underserved markets around the world. The company has patents for innovative optical communications hardware. Based on these patents, they can create many reliable, high-speed backbone links with inexpensive hardware.Company Background -Founded by experienced telecom executives, MJTelco uses technologies originally developed to overcome communications challenges in space. Fundamental to their operation, they need to create a distributed data infrastructure that drives real-time analysis and incorporates machine learning to continuously optimize their topologies. Because their hardware is inexpensive, they plan to overdeploy the network allowing them to account for the impact of dynamic regional politics on location availability and cost.Their management and operations teams are situated all around the globe creating many-to-many relationship between data consumers and provides in their system. After careful consideration, they decided public cloud is the perfect environment to support their needs.Solution Concept -MJTelco is running a successful proof-of-concept (PoC) project in its labs. They have two primary needs:✑ Scale and harden their PoC to support significantly more data flows generated when they ramp to more than 50,000 installations.✑ Refine their machine-learning cycles to verify and improve the dynamic models they use to control topology definition.MJTelco will also use three separate operating environments "" development/test, staging, and production "" to meet the needs of running experiments, deploying new features, and serving production customers.Business Requirements -✑ Scale up their production environment with minimal cost, instantiating resources when and where needed in an unpredictable, distributed telecom user community.✑ Ensure security of their proprietary data to protect their leading-edge machine learning and analysis.✑ Provide reliable and timely access to data for analysis from distributed research workers✑ Maintain isolated environments that support rapid iteration of their machine-learning models without affecting their customers.Technical Requirements -Ensure secure and efficient transport and storage of telemetry dataRapidly scale instances to support between 10,000 and 100,000 data providers with multiple flows each.Allow analysis and presentation against data tables tracking up to 2 years of data storing approximately 100m records/daySupport rapid iteration of monitoring infrastructure focused on awareness of data pipeline problems both in telemetry flows and in production learning cycles.CEO Statement -Our business model relies on our patents, analytics and dynamic machine learning. Our inexpensive hardware is organized to be highly reliable, which gives us cost advantages. We need to quickly stabilize our large distributed data pipelines to meet our reliability and capacity commitments.CTO Statement -Our public cloud services must operate as advertised. We need resources that scale and keep our data secure. We also need environments in which our data scientists can carefully study and quickly adapt our models. Because we rely on automation to process our data, we also need our development and test environments to work as we iterate.CFO Statement -The project is too large for us to maintain the hardware and software required for the data and analysis. Also, we cannot afford to staff an operations team to monitor so many data feeds, so we will rely on automation and infrastructure. Google Cloud's machine learning will allow our quantitative researchers to work on our high-value problems instead of problems with our data pipelines.Given the record streams MJTelco is interested in ingesting per day, they are concerned about the cost of Google BigQuery increasing. MJTelco asks you to provide a design solution. They require a single large data table called tracking_table. Additionally, they want to minimize the cost of daily queries while performing fine-grained analysis of each day's events. They also want to use streaming ingestion. What should you do?
+A. Create a table called tracking_table and include a DATE column.
+B(correct). Create a partitioned table called tracking_table and include a TIMESTAMP column.
+C. Create sharded tables for each day following the pattern tracking_table_YYYYMMDD.
+D. Create a table called tracking_table with a TIMESTAMP column to represent the day.
+
+##### You work for a shipping company that uses handheld scanners to read shipping labels. Your company has strict data privacy standards that require scanners to only transmit recipients' personally identifiable information (PII) to analytics systems, which violates user privacy rules. You want to quickly build a scalable solution using cloud-native managed services to prevent exposure of PII to the analytics systems. What should you do?
+A. Create an authorized view in BigQuery to restrict access to tables with sensitive data.
+B. Install a third-party data validation tool on Compute Engine virtual machines to check the incoming data for sensitive information.
+C. Use Stackdriver logging to analyze the data passed through the total pipeline to identify transactions that may contain sensitive information.
+Your answer is correct
+D(correct). Build a Cloud Function that reads the topics and makes a call to the Cloud Data Loss Prevention API. Use the tagging and confidence levels to either pass or quarantine the data in a bucket for review.
+
+Overall explanation
+Cloud Data Loss Prevention gives you the power to scan, discover, classify, and report on data from virtually anywhere. Cloud DLP has native support for scanning and classifying sensitive data in Cloud Storage, BigQuery, and Cloud Datastore and a streaming content API to enable support for additional data sources, custom workloads and applications. https://cloud.google.com/dlp/
+
+##### You are building a model to make clothing recommendations. You know a user's fashion preference is likely to change over time, so you build a data pipeline to stream new data back to the model as it becomes available. How should you use this data to train the model?
+A. Continuously retrain the model on just the new data.
+B. Continuously retrain the model on a combination of existing data and the new data.
+C. Train on the existing data while using the new data as your test set.
+D. Train on the new data while using the existing data as your test set.
+
+Overall explanation
+Vote for B. In Recommendation System - Matrix stored in database - which store the users rating and other details like how much time user spent on that page.We generally recommend on basis of matrix. And In production that matrix updated (or model get retrained once a day or once a week) - Because there could be new users rating. or we can say new data. So model retrained fully i.e. on Existing Data + New Data => and generate a new matrix (user/item matrix)
+
+##### You are integrating one of your internal IT applications and Google BigQuery, so users can query BigQuery from the application's interface. You do not want individual users to authenticate to BigQuery and you do not want to give them access to the dataset. You need to securely access BigQuery from your IT application. What should you do?
+A. Create groups for your users and give those groups access to the dataset
+B. Integrate with a single sign-on (SSO) platform, and pass each user's credentials along with the query request
+C(correct). Create a service account and grant dataset access to that account. Use the service account's private key to access the dataset
+D. Create a dummy user and grant dataset access to that user. Store the username and password for that user in a file on the files system, and use those credentials to access the BigQuery dataset
+
+##### You want to automate execution of a multi-step data pipeline running on Google Cloud. The pipeline includes Cloud Dataproc and Cloud Dataflow jobs that have multiple dependencies on each other. You want to use managed services where possible, and the pipeline will run every day. Which tool should you use?
+A. cron
+B(correct). Cloud Composer
+C. Cloud Scheduler
+D. Workflow Templates on Cloud Dataproc
+
+Overall explanation
+B: Cloud Composer is a fully managed workflow orchestration service that empowers you to author, schedule, and monitor pipelines that span across clouds and on-premises data centres. https://cloud.google.com/composer/
+
+##### You are building a new application that you need to collect data from in a scalable way. Data arrives continuously from the application throughout the day, and you expect to generate approximately 150 GB of JSON data per day by the end of the year. Your requirements are:✑ Decoupling producer from consumer✑ Space and cost-efficient storage of the raw ingested data, which is to be stored indefinitely✑ Near real-time SQL query✑ Maintain at least 2 years of historical data, which will be queried with SQLWhich pipeline should you use to meet these requirements?
+A. Create an application that provides an API. Write a tool to poll the API and write data to Cloud Storage as gzipped JSON files.
+B. Create an application that writes to a Cloud SQL database to store the data. Set up periodic exports of the database to write to Cloud Storage and load into BigQuery.
+C. Create an application that publishes events to Cloud Pub/Sub, and create Spark jobs on Cloud Dataproc to convert the JSON data to Avro format, stored on HDFS on Persistent Disk.
+D(correct). Create an application that publishes events to Cloud Pub/Sub, and create a Cloud Dataflow pipeline that transforms the JSON event payloads to Avro, writing the data to Cloud Storage and BigQuery.
+
+##### You are designing a basket abandonment system for an ecommerce company. The system will send a message to a user based on these rules:✑ No interaction by the user on the site for 1 hour✑ Has added more than $30 worth of products to the basket✑ Has not completed a transactionYou use Google Cloud Dataflow to process the data and decide if a message should be sent. How should you design the pipeline?
+A. Use a fixed-time window with a duration of 60 minutes.
+B. Use a sliding time window with a duration of 60 minutes.
+C(correct). Use a session window with a gap time duration of 60 minutes.
+D. Use a global window with a time based trigger with a delay of 60 minutes.
+
+Overall explanation
+The correct answer is C. There are 3 windowing concepts in dataflow and each can be used for below use case 1) Fixed window 2) Sliding window and 3) Session window. Fixed window = any aggregation use cases, any batch analysis of data, relatively simple use cases. Sliding window = Moving averages of data Session window = user session data, click data and real time gaming analysis. The question here is about user session data and hence session window.
+
+##### You have historical data covering the last three years in BigQuery and a data pipeline that delivers new data to BigQuery daily. You have noticed that when theData Science team runs a query filtered on a date column and limited to 30""90 days of data, the query scans the entire table. You also noticed that your bill is increasing more quickly than you expected. You want to resolve the issue as cost-effectively as possible while maintaining the ability to conduct SQL queries.What should you do?
+A(correct). Re-create the tables using DDL. Partition the tables by a column containing a TIMESTAMP or DATE Type.
+B. Recommend that the Data Science team export the table to a CSV file on Cloud Storage and use Cloud Datalab to explore the data by reading the files directly.
+C. Modify your pipeline to maintain the last 30""90 days of data in one table and the longer history in a different table to minimize full table scans over the entire history.
+D. Write an Apache Beam pipeline that creates a BigQuery table per day. Recommend that the Data Science team use wildcards on the table name suffixes to select the data they need.
+Overall explanation
+I will go with Option A, although at first instance I felt Option C would be correct. Option A : Because partitioning will help to address both the concerns mentioned in the question - i.e. faster query and reducing cost. Option C : Modifying the data pipeline to store last 30-90 days data would have possible, if there was a point mentioned that only the latest data (30-90 days) is kept and the older data - beyond 90 days is moved to the master table. Since that point is mot mentioned, we will land up having multiple - 30-90 days data in separate tables + the master table.
+
+##### You are designing storage for two relational tables that are part of a 10-TB database on Google Cloud. You want to support transactions that scale horizontally.You also want to optimize data for range queries on non-key columns. What should you do?
+A. Use Cloud SQL for storage. Add secondary indexes to support query patterns.
+Your answer is incorrect
+B. Use Cloud SQL for storage. Use Cloud Dataflow to transform data to support query patterns.
+Correct answer
+C. Use Cloud Spanner for storage. Add secondary indexes to support query patterns.
+D. Use Cloud Spanner for storage. Use Cloud Dataflow to transform data to support query patterns.
+
+Overall explanation
+A is not correct because Cloud SQL does not natively scale horizontally. B is not correct because Cloud SQL does not natively scale horizontally. C is correct because Cloud Spanner scales horizontally, and you can create secondary indexes for the range queries that are required. D is not correct because Dataflow is a data pipelining tool to move and transform data, but the use case is centered around querying.
+
+##### You are designing storage for 20 TB of text files as part of deploying a data pipeline on Google Cloud. Your input data is in CSV format. You want to minimize the cost of querying aggregate values for multiple users who will query the data in Cloud Storage with multiple engines. Which storage service and schema design should you use?
+A. Use Cloud Bigtable for storage. Install the HBase shell on a Compute Engine instance to query the Cloud Bigtable data.
+B. Use Cloud Bigtable for storage. Link as permanent tables in BigQuery for query.
+Correct answer
+C(correct). Use Cloud Storage for storage. Link as permanent tables in BigQuery for query.
+D. Use Cloud Storage for storage. Link as temporary tables in BigQuery for query.
+
+Overall explanation
+answer C: BigQuery can access data in external sources, known as federated sources. Instead of first loading data into BigQuery, you can create a reference to an external source. External sources can be Cloud Bigtable, Cloud Storage, and Google Drive. When accessing external data, you can create either permanent or temporary external tables. Permanent tables are those that are created in a dataset and linked to an external source. Dataset-level access controls can be applied to these tables. When you are using a temporary table, a table is created in a special dataset and will be available for approxi- mately 24 hours. Temporary tables are useful for one-time operations, such as loading data into a data warehouse. "Dan Sullivan" Book
+
+##### You are designing the database schema for a machine learning-based food ordering service that will predict what users want to eat. Here is some of the information you need to store:✑ The user profile: What the user likes and doesn't like to eat✑ The user account information: Name, address, preferred meal times✑ The order information: When orders are made, from where, to whomThe database will be used to store all the transactional data of the product. You want to optimize the data schema. Which Google Cloud Platform product should you use?
+A(correct). BigQuery
+B. Cloud SQL
+C. Cloud Bigtable
+D. Cloud Datastore
+
+Overall explanation
+Firebase is a documental DB so can have a schema but "Cloud Datastore" not. The question says it needs to "store" transactional data, not doing transaction operations and the data will be used for ML. For all these reasones BigQuery is the best choice.
+
+##### Your neural network model is taking days to train. You want to increase the training speed. What can you do?
+A. Subsample your test dataset.
+B(correct). Subsample your training dataset.
+C. Increase the number of input features to your model.
+D. Increase the number of layers in your neural network.
+
+Overall explanation
+increase the number of layers will make the training slower https://www.quora.com/Is-there-a-specific-reason-why-a-neural-network-with-more-layers-might-perform-worse-than-a-network-with-fewer-layers https://towardsdatascience.com/how-to-train-neural-network-faster-with-optimizers-d297730b3713
+
+##### You need to store and analyze social media postings in Google BigQuery at a rate of 10,000 messages per minute in near real-time. Initially, design the application to use streaming inserts for individual postings. Your application also performs data aggregations right after the streaming inserts. You discover that the queries after streaming inserts do not exhibit strong consistency, and reports from the queries might miss in-flight data. How can you adjust your application design?
+A. Re-write the application to load accumulated data every 2 minutes.
+B. Convert the streaming insert code to batch load for individual messages.
+C. Load the original message to Google Cloud SQL, and export the table every hour to BigQuery via streaming inserts.
+D(correct). Estimate the average latency for data availability after streaming inserts, and always run queries after waiting twice as long.
+
+Overall explanation
+Answer: D Description: The data is first comes to buffer and then written to Storage. If we are running queries in buffer we will face above mentioned issues. If we wait for the bigquery to write the data to storage then we won’t face the issue. So We need to wait till it’s written tio storage
+
+##### What are all of the BigQuery operations that Google charges for?
+A(correct). Storage, queries, and streaming inserts
+B. Storage, queries, and loading data from a file
+C. Storage, queries, and exporting data
+D. Queries and streaming inserts
+
+Overall explanation
+Google charges for storage, queries, and streaming inserts. Loading data from a file and exporting data are free operations. Reference: https://cloud.google.com/bigquery/pricing
