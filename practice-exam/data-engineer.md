@@ -1133,6 +1133,7 @@ Answer: D Description: The data is first comes to buffer and then written to Sto
 
 ##### What are all of the BigQuery operations that Google charges for?
 A(correct). Storage, queries, and streaming inserts
+
 B. Storage, queries, and loading data from a file
 C. Storage, queries, and exporting data
 D. Queries and streaming inserts
