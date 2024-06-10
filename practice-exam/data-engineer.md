@@ -1316,3 +1316,418 @@ D. Queries and streaming inserts
 
 Overall explanation
 Google charges for storage, queries, and streaming inserts. Loading data from a file and exporting data are free operations. Reference: https://cloud.google.com/bigquery/pricing
+
+##### You decided to use Cloud Datastore to ingest vehicle telemetry data in real time. You want to build a storage system that will account for the long-term data growth, while keeping the costs low. You also want to create snapshots of the data periodically, so that you can make a point-in-time (PIT) recovery, or clone a copy of the data for Cloud Datastore in a different environment. You want to archive these snapshots for a long time. Which two methods can accomplish this?(Choose two.)
+A(correct). Use managed export, and store the data in a Cloud Storage bucket using Nearline or Coldline class.
+B(correct). Use managed export, and then import to Cloud Datastore in a separate project under a unique namespace reserved for that export.
+C. Use managed export, and then import the data into a BigQuery table created just for that export, and delete temporary export files.
+D. Write an application that uses Cloud Datastore client libraries to read all the entities. Treat each entity as a BigQuery table row via BigQuery streaming insert. Assign an export timestamp for each export, and attach it as an extra column for each row. Make sure that the BigQuery table is partitioned using the export timestamp column.
+E. Write an application that uses Cloud Datastore client libraries to read all the entities. Format the exported data into a JSON file. Apply compression before storing the data in Cloud Source Repositories.
+
+Overall explanation
+https://cloud.google.com/datastore/docs/export-import-entities
+
+##### Business owners at your company have given you a database of bank transactions. Each row contains the user ID, transaction type, transaction location, and transaction amount. They ask you to investigate what type of machine learning can be applied to the data. Which three machine learning applications can you use? (Choose three.)
+A. Supervised learning to determine which transactions are most likely to be fraudulent.
+B(correct). Unsupervised learning to determine which transactions are most likely to be fraudulent.
+C(correct). Clustering to divide the transactions into N categories based on feature similarity.
+D. Supervised learning to predict the location of a transaction.
+E(correct). Reinforcement learning to predict the location of a transaction.
+F. Unsupervised learning to predict the location of a transaction.
+
+Overall explanation
+BCD makes sense, but I now agree that BCE is the correct answer. Say the model predict a location, guessing US or Sweden are both wrong when the answer is Canada. But US is closer, the distance from the correct location can be used to calculate a reward. Through reinforcement learning (E) the model could guess a location with better accuracy than supervised (D).
+
+##### You want to build a managed Hadoop system as your data lake. The data transformation process is composed of a series of Hadoop jobs executed in sequence.To accomplish the design of separating storage from compute, you decided to use the Cloud Storage connector to store all input data, output data, and intermediary data. However, you noticed that one Hadoop job runs very slowly with Cloud Dataproc, when compared with the on-premises bare-metal Hadoop environment (8-core nodes with 100-GB RAM). Analysis shows that this particular Hadoop job is disk I/O intensive. You want to resolve the issue. What should you do?
+A. Allocate sufficient memory to the Hadoop cluster, so that the intermediary data of that particular Hadoop job can be held in memory
+B(correct). Allocate sufficient persistent disk space to the Hadoop cluster, and store the intermediate data of that particular Hadoop job on native HDFS
+C. Allocate more CPU cores of the virtual machine instances of the Hadoop cluster so that the networking bandwidth for each instance can scale up
+D. Allocate additional network interface card (NIC), and configure link aggregation in the operating system to use the combined throughput when working with Cloud Storage
+
+Overall explanation
+Correct: B Local HDFS storage is a good option if: Your jobs require a lot of metadata operations—for example, you have thousands of partitions and directories, and each file size is relatively small. You modify the HDFS data frequently or you rename directories. (Cloud Storage objects are immutable, so renaming a directory is an expensive operation because it consists of copying all objects to a new key and deleting them afterwards.) You heavily use the append operation on HDFS files. You have workloads that involve heavy I/O. For example, you have a lot of partitioned writes, such as the following: spark.read().write.partitionBy(...).parquet("gs://") You have I/O workloads that are especially sensitive to latency. For example, you require single-digit millisecond latency per storage operation.
+
+##### Your software uses a simple JSON format for all messages. These messages are published to Google Cloud Pub/Sub, then processed with Google CloudDataflow to create a real-time dashboard for the CFO. During testing, you notice that some messages are missing in the dashboard. You check the logs, and all messages are being published to Cloud Pub/Sub successfully. What should you do next?
+A. Check the dashboard application to see if it is not displaying correctly.
+B. Run a fixed dataset through the Cloud Dataflow pipeline and analyze the output.
+Your answer is correct
+C(correct). Use Google Stackdriver Monitoring on Cloud Pub/Sub to find the missing messages.
+D. Switch Cloud Dataflow to pull messages from Cloud Pub/Sub instead of Cloud Pub/Sub pushing messages to Cloud Dataflow.
+
+Overall explanation
+C as mentioned in https://cloud.google.com/pubsub/docs/monitoring Monitoring the backlog To ensure that your subscribers are keeping up with the flow of messages, create a dashboard that shows the following backlog metrics, aggregated by resource, for all your subscriptions: subscription/num_undelivered_messages to see the number of unacknowledged messages subscription/oldest_unacked_message_age to see the age of the oldest unacknowledged message in the subscription's backlog
+
+##### Does Dataflow process batch data pipelines or streaming data pipelines?
+A. Only Batch Data Pipelines
+B(correct). Both Batch and Streaming Data Pipelines
+C. Only Streaming Data Pipelines
+D. None of the above
+
+Overall explanation
+Dataflow is a unified processing model, and can execute both streaming and batch data pipelines Reference: https://cloud.google.com/dataflow/
+
+##### You've migrated a Hadoop job from an on-prem cluster to dataproc and GCS. Your Spark job is a complicated analytical workload that consists of many shuffing operations and initial data are parquet files (on average 200-400 MB size each). You see some degradation in performance after the migration to Dataproc, so you'd like to optimize for it. You need to keep in mind that your organization is very cost-sensitive, so you'd like to continue using Dataproc on preemptibles (with 2 non-preemptible workers only) for this workload.What should you do?
+A. Increase the size of your parquet files to ensure them to be 1 GB minimum.
+B. Switch to TFRecords formats (appr. 200MB per file) instead of parquet files.
+C. Switch from HDDs to SSDs, copy initial data from GCS to HDFS, run the Spark job and copy results back to GCS.
+D(correct). Switch from HDDs to SSDs, override the preemptible VMs configuration to increase the boot disk size.
+
+Overall explanation
+It is definitely D a) "To get optimal performance, split your data in Cloud Storage into files with sizes from 128 MB to 1 GB." https://cloud.google.com/architecture/hadoop/migrating-apache-spark-jobs-to-cloud-dataproc#optimize_performance Files are already within this size range, so increasing to 1GB or over would worsen performance. b) Same as a) - changing file type would not affect performance. c) "Your Dataproc cluster needs non-HDFS local disk space for shuffling." https://cloud.google.com/architecture/hadoop/migrating-apache-spark-jobs-to-cloud-dataproc#adjust_storage_size HDFS is not used for shuffling workloads, so copying data to it wouldn't do much. d) "If you perform many shuffling operations or partitioned writes, switch to SSDs to boost performance." "As a default, preemptible VMs are created with a smaller boot disk size, and you might want to override this configuration if you are running shuffle-heavy workloads." https://cloud.google.com/architecture/hadoop/migrating-apache-spark-jobs-to-cloud-dataproc#optimize_performance
+
+##### You have data pipelines running on BigQuery, Cloud Dataflow, and Cloud Dataproc. You need to perform health checks and monitor their behavior, and then notify the team managing the pipelines if they fail. You also need to be able to work across multiple projects. Your preference is to use managed products of features of the platform. What should you do?
+A(correct). Export the information to Cloud Stackdriver, and set up an Alerting policy
+B. Run a Virtual Machine in Compute Engine with Airflow, and export the information to Stackdriver
+C. Export the logs to BigQuery, and set up App Engine to read that information and send emails if you find a failure in the logs
+D. Develop an App Engine application to consume logs using GCP API calls, and send emails if you find a failure in the logs
+
+Overall explanation
+Answer: A Description: Monitoring does not only provide you with access to Dataflow-related metrics, but also lets you to create alerting policies and dashboards so you can chart time series of metrics and choose to be notified when these metrics reach specified values.
+
+##### An external customer provides you with a daily dump of data from their database. The data flows into Google Cloud Storage GCS as comma-separated values(CSV) files. You want to analyze this data in Google BigQuery, but the data could have rows that are formatted incorrectly or corrupted. How should you build this pipeline?
+A. Use federated data sources, and check data in the SQL query.
+B. Enable BigQuery monitoring in Google Stackdriver and create an alert.
+C. Import the data into BigQuery using the gcloud CLI and set max_bad_records to 0.
+D(correct). Run a Google Cloud Dataflow batch pipeline to import the data into BigQuery, and push errors to another dead-letter table for analysis.
+
+Overall explanation
+The answer is D. An ETL pipeline will be implemented for this scenario. Check out handling invalid inputs in cloud data flow https://cloud.google.com/blog/products/gcp/handling-invalid-inputs-in-dataflow ParDos . . . and don’ts: handling invalid inputs in Dataflow using Side Outputs as a “Dead Letter” file
+
+##### You're training a model to predict housing prices based on an available dataset with real estate properties. Your plan is to train a fully connected neural net, and you've discovered that the dataset contains latitude and longitude of the property. Real estate professionals have told you that the location of the property is highly influential on price, so you'd like to engineer a feature that incorporates this physical dependency.What should you do?
+A. Provide latitude and longitude as input vectors to your neural net.
+B. Create a numeric column from a feature cross of latitude and longitude.
+C(correct). Create a feature cross of latitude and longitude, bucketize at the minute level and use L1 regularization during optimization.
+D. Create a feature cross of latitude and longitude, bucketize it at the minute level and use L2 regularization during optimization.
+
+Overall explanation
+A and B don’t make sense Now; the crossed feature represents a well defined city block. If the model learns that certain city blocks (within range of latitudes and longitudes) are more likely to be more expensive than others, it is a stronger signal than two features considered individually. BUT we’ll have way too many dimensions (and that is bad). Would L2 regularization accomplish this task? Unfortunately not. L2 regularization encourages weights to be small, but doesn’t force them to exactly 0.0. However, there is a regularization term called L1 regularization that serves as an approximation to L0, but has the advantage of being convex and thus efficient to compute. So we can use L1 regularization to encourage many of the uninformative coefficients in our model to be exactly 0, and thus reap RAM savings at inference time. https://developers.google.com/machine-learning/crash-course/regularization-for-sparsity/l1-regularization
+
+##### You want to process payment transactions in a point-of-sale application that will run on Google Cloud Platform. Your user base could grow exponentially, but you do not want to manage infrastructure scaling.Which Google database service should you use?
+A. Cloud SQL
+B. BigQuery
+C. Cloud Bigtable
+D(correct). Cloud Datastore
+
+Overall explanation
+Initially, thinking D is the best answer but when question is re-re-read, A seems to be correct answer for following reasons 1. Is payment TRANSACTION -- DB should able to perform full blown transaction (updating inventory, sales info etc, though not specified) , not just ATOMIC which DataStore provides 2. Its point-of-sale application, not ONLINE STORE where HIGH number of concurrent users ordering stuff. 3. User Base could grow exponentially - again more users does mot mean concurrent users and more processing power. Its only about storage. 4. Do not want to Manage infrastructure scaling. - Cloud SQL can scale in terms of storage. 5. CloudStore is poor selection for OLTP application - Each property is index - so higher latency
+
+##### You are designing storage for very large text files for a data pipeline on Google Cloud. You want to support ANSI SQL queries. You also want to support compression and parallel load from the input locations using Google recommended practices. What should you do?
+A. Transform text files to compressed Avro using Cloud Dataflow. Use BigQuery for storage and query.
+B(correct). Transform text files to compressed Avro using Cloud Dataflow. Use Cloud Storage and BigQuery permanent linked tables for query.
+C. Compress text files to gzip using the Grid Computing Tools. Use BigQuery for storage and query.
+D. Compress text files to gzip using the Grid Computing Tools. Use Cloud Storage, and then import into Cloud Bigtable for query.
+
+Overall explanation
+B. The question is focused on designing storage for very large files, with support for compression, ANSI SQL queries, and parallel loading from the input locations. This can be met using GCS for storage and Bigquery permanent tables with external data source in GCS.
+
+##### Your weather app queries a database every 15 minutes to get the current temperature. The frontend is powered by Google App Engine and server millions of users. How should you design the frontend to respond to a database failure?
+A. Issue a command to restart the database servers.
+B(correct). Retry the query with exponential backoff, up to a cap of 15 minutes.
+C. Retry the query every second until it comes back online to minimize staleness of data.
+D. Reduce the query frequency to once every hour until the database comes back online.
+
+Overall explanation
+Correct answer is B. App engine create applications that use Cloud SQL database connections effectively. Below is what is written in google cloud documnetation. If your application attempts to connect to the database and does not succeed, the database could be temporarily unavailable. In this case, sending too many simultaneous connection requests might waste additional database resources and increase the time needed to recover. Using exponential backoff prevents your application from sending an unresponsive number of connection requests when it can't connect to the database. This retry only makes sense when first connecting, or when first grabbing a connection from the pool. If errors happen in the middle of a transaction, the application must do the retrying, and it must retry from the beginning of a transaction. So even if your pool is configured properly, the application might still see errors if connections are lost. reference link is https://cloud.google.com/sql/docs/mysql/manage-connections
+
+##### How would you query specific partitions in a BigQuery table?
+Your answer is incorrect
+A. Use the DAY column in the WHERE clause
+B. Use the EXTRACT(DAY) clause
+C(correct). Use the __PARTITIONTIME pseudo-column in the WHERE clause
+D. Use DATE BETWEEN in the WHERE clause
+
+Overall explanation
+Partitioned tables include a pseudo column named _PARTITIONTIME that contains a date-based timestamp for data loaded into the table. To limit a query to particular partitions (such as Jan 1st and 2nd of 2017), use a clause similar to this: WHERE _PARTITIONTIME BETWEEN TIMESTAMP('2017-01-01') AND TIMESTAMP('2017-01-02') Reference: https://cloud.google.com/bigquery/docs/partitioned-tables#the_partitiontime_pseudo_column
+
+##### To run a TensorFlow training job on your own computer using Cloud Machine Learning Engine, what would your command start with?
+A(correct). gcloud ml-engine local train
+B. gcloud ml-engine jobs submit training
+C. gcloud ml-engine jobs submit training local
+Your answer is incorrect
+D. You can't run a TensorFlow program on your own computer using Cloud ML Engine .
+
+Overall explanation
+gcloud ml-engine local train - run a Cloud ML Engine training job locally This command runs the specified module in an environment similar to that of a live Cloud ML Engine Training Job. This is especially useful in the case of testing distributed models, as it allows you to validate that you are properly interacting with the Cloud ML Engine cluster configuration. Reference: https://cloud.google.com/sdk/gcloud/reference/ml-engine/local/train
+
+##### Why do you need to split a machine learning dataset into training data and test data?
+A. So you can try two different sets of features
+B(correct)To make sure your model is generalized for more than just the training data
+C. To allow you to create unit tests in your code
+D. So you can use one dataset for a wide model and one for a deep model
+
+Overall explanation
+The flaw with evaluating a predictive model on training data is that it does not inform you on how well the model has generalized to new unseen data. A model that is selected for its accuracy on the training dataset rather than its accuracy on an unseen test dataset is very likely to have lower accuracy on an unseen test dataset. The reason is that the model is not as generalized. It has specialized to the structure in the training dataset. This is called overfitting. Reference: https://machinelearningmastery.com/a-simple-intuition-for-overfitting/
+
+##### You work for a mid-sized enterprise that needs to move its operational system transaction data from an on-premises database to GCP. The database is about 20TB in size. Which database should you choose?
+A(correct). Cloud SQL
+B. Cloud Bigtable
+C. Cloud Spanner
+D. Cloud Datastore
+
+Overall explanation
+Option A - Cloud SQL is the correct answer. Cloud SQL can store upto 30 TB. https://cloud.google.com/sql/docs/quotas#:~:text=Cloud%20SQL%20storage%20limits&text=Up%20to%2030%2C720%20GB%2C%20depending,for%20PostgreSQL%20or%20SQL%20Server.
+
+##### You are designing an Apache Beam pipeline to enrich data from Cloud Pub/Sub with static reference data from BigQuery. The reference data is small enough to fit in memory on a single worker. The pipeline should write enriched results to BigQuery for analysis. Which job type and transforms should this pipeline use?
+A. Batch job, PubSubIO, side-inputs
+B. Streaming job, PubSubIO, JdbcIO, side-outputs
+C(correct). Streaming job, PubSubIO, BigQueryIO, side-inputs
+D. Streaming job, PubSubIO, BigQueryIO, side-outputs
+
+Overall explanation
+Answer is C, You need pubsubIO and BigQueryIO for streaming data and writing enriched data back to BigQuery. side-inputs are a way to enrich the data https://cloud.google.com/architecture/e-commerce/patterns/slow-updating-side-inputs
+
+##### Which of the following job types are supported by Cloud Dataproc (select 3 answers)?
+A(correct). Hive
+B(correct). Pig
+C. YARN
+D(correct). Spark
+
+Overall explanation
+Cloud Dataproc provides out-of-the box and end-to-end support for many of the most popular job types, including Spark, Spark SQL, PySpark, MapReduce, Hive, and Pig jobs. Reference: https://cloud.google.com/dataproc/docs/resources/faq#what_type_of_jobs_can_i_run
+
+##### You operate an IoT pipeline built around Apache Kafka that normally receives around 5000 messages per second. You want to use Google Cloud Platform to create an alert as soon as the moving average over 1 hour drops below 4000 messages per second. What should you do?
+A(correct). Consume the stream of data in Cloud Dataflow using Kafka IO. Set a sliding time window of 1 hour every 5 minutes. Compute the average when the window closes, and send an alert if the average is less than 4000 messages.
+Your answer is incorrect
+B. Consume the stream of data in Cloud Dataflow using Kafka IO. Set a fixed time window of 1 hour. Compute the average when the window closes, and send an alert if the average is less than 4000 messages.
+C. Use Kafka Connect to link your Kafka message queue to Cloud Pub/Sub. Use a Cloud Dataflow template to write your messages from Cloud Pub/Sub to Cloud Bigtable. Use Cloud Scheduler to run a script every hour that counts the number of rows created in Cloud Bigtable in the last hour. If that number falls below 4000, send an alert.
+D. Use Kafka Connect to link your Kafka message queue to Cloud Pub/Sub. Use a Cloud Dataflow template to write your messages from Cloud Pub/Sub to BigQuery. Use Cloud Scheduler to run a script every five minutes that counts the number of rows created in BigQuery in the last hour. If that number falls below 4000, send an alert.
+
+Overall explanation
+Option A is the correct answer. Reasons:- a) Kafka IO and Dataflow is a valid option for interconnect (needless where Kafka is located - On Prem/Google Cloud/Other cloud) b) Sliding Window will help to calculate average. Option C and D are overkill and complex, considering the scenario in the question, https://cloud.google.com/solutions/processing-messages-from-kafka-hosted-outside-gcp
+
+##### Your company is loading comma-separated values (CSV) files into Google BigQuery. The data is fully imported successfully; however, the imported data is not matching byte-to-byte to the source file. What is the most likely cause of this problem?
+A. The CSV data loaded in BigQuery is not flagged as CSV.
+B. The CSV data has invalid rows that were skipped on import.
+C(correct). The CSV data loaded in BigQuery is not using BigQuery's default encoding.
+D. The CSV data has not gone through an ETL phase before loading into BigQuery.
+
+Overall explanation
+C is correct answer, Refer below link for more informaiton. https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#details_of_loading_csv_data
+
+##### You are deploying MariaDB SQL databases on GCE VM Instances and need to configure monitoring and alerting. You want to collect metrics including network connections, disk IO and replication status from MariaDB with minimal development effort and use StackDriver for dashboards and alerts.What should you do?
+A(correct). Install the OpenCensus Agent and create a custom metric collection application with a StackDriver exporter.
+B. Place the MariaDB instances in an Instance Group with a Health Check.
+C. Install the StackDriver Logging Agent and configure fluentd in_tail plugin to read MariaDB logs.
+D. Install the StackDriver Agent and configure the MySQL plugin.
+
+Overall explanation
+It is definitely A. B: can't be because Health Checks just checks that machine is online C: StackDriver Logging is for Logging. Here we talk of Monitoring / Alerting D: StackDriver Agent monitors default metrics of VMs and some Database stuff with the MySQL Plugin. Here you want to monitor some more custom stuff like Replication of MariaDB (I didn't find anything of this sort in the plugin page), and you may want to use Custom Metrics rather than default metrics. "Cloud Monitoring automatically collects more than 1,500 built-in metrics from more than 100 monitored resources. But those metrics cannot capture application-specific data or client-side system data. Those metrics can give you information on backend latency or disk usage, but they can't tell you how many background routines your application spawned." https://cloud.google.com/monitoring/custom-metrics/open-census#monitoring_opencensus_metrics_quickstart-python
+
+##### Which methods can be used to reduce the number of rows processed by BigQuery?
+A(correct). Splitting tables into multiple tables; putting data in partitions
+B. Splitting tables into multiple tables; putting data in partitions; using the LIMIT clause
+C. Putting data in partitions; using the LIMIT clause
+D. Splitting tables into multiple tables; using the LIMIT clause
+
+Overall explanation
+If you split a table into multiple tables (such as one table for each day), then you can limit your query to the data in specific tables (such as for particular days). A better method is to use a partitioned table, as long as your data can be separated by the day. If you use the LIMIT clause, BigQuery will still process the entire table. Reference: https://cloud.google.com/bigquery/docs/partitioned-tables
+
+##### You are planning to use Google's Dataflow SDK to analyze customer data such as displayed below. Your project requirement is to extract only the customer name from the data source and then write to an output PCollection.Tom,555 X street -Tim,553 Y street -Sam, 111 Z street -Which operation is best suited for the above data processing requirement?
+A(correct). ParDo
+B. Sink API
+C. Source API
+D. Data extraction
+
+Overall explanation
+In Google Cloud dataflow SDK, you can use the ParDo to extract only a customer name of each element in your PCollection. Reference: https://cloud.google.com/dataflow/model/par-do
+
+##### Suppose you have a dataset of images that are each labeled as to whether or not they contain a human face. To create a neural network that recognizes human faces in images using this labeled dataset, what approach would likely be the most effective?
+A. Use K-means Clustering to detect faces in the pixels.
+B. Use feature engineering to add features for eyes, noses, and mouths to the input data.
+C(correct). Use deep learning by creating a neural network with multiple hidden layers to automatically detect features of faces.
+D. Build a neural network with an input layer of pixels, a hidden layer, and an output layer with two categories.
+
+Overall explanation
+Traditional machine learning relies on shallow nets, composed of one input and one output layer, and at most one hidden layer in between. More than three layers (including input and output) qualifies as "deep" learning. So deep is a strictly defined, technical term that means more than one hidden layer. In deep-learning networks, each layer of nodes trains on a distinct set of features based on the previous layers output. The further you advance into the neural net, the more complex the features your nodes can recognize, since they aggregate and recombine features from the previous layer. A neural network with only one hidden layer would be unable to automatically recognize high-level features of faces, such as eyes, because it wouldn't be able to "build" these features using previous hidden layers that detect low-level features, such as lines. Feature engineering is difficult to perform on raw image data. K-means Clustering is an unsupervised learning method used to categorize unlabeled data. Reference: https://deeplearning4j.org/neuralnet-overview
+
+##### You create an important report for your large team in Google Data Studio 360. The report uses Google BigQuery as its data source. You notice that visualizations are not showing data that is less than 1 hour old. What should you do?
+A(correct). Disable caching by editing the report settings.
+B. Disable caching in BigQuery by editing table details.
+C. Refresh your browser tab showing the visualizations.
+D. Clear your browser history for the past hour then reload the tab showing the virtualizations.
+
+Overall explanation
+correct answer -> Disable caching by editing the report settings. A cache is a temporary data storage system. Fetching cached data can be much faster than fetching it directly from the underlying data set, and helps reduce the number of queries sent, minimizing costs for paid data access. Reference: https://support.google.com/datastudio/answer/7020039?hl=en#zippy=%2Cin-this-article
+
+#### Your startup has never implemented a formal security policy. Currently, everyone in the company has access to the datasets stored in Google BigQuery. Teams have freedom to use the service as they see fit, and they have not documented their use cases. You have been asked to secure the data warehouse. You need to discover what everyone is doing. What should you do first?
+A(correct). Use Google Stackdriver Audit Logs to review data access.
+B. Get the identity and access management IIAM) policy of each table
+C. Use Stackdriver Monitoring to see the usage of BigQuery query slots.
+D. Use the Google Cloud Billing API to see what account the warehouse is being billed to.
+
+##### You are working on a sensitive project involving private user data. You have set up a project on Google Cloud Platform to house your work internally. An external consultant is going to assist with coding a complex transformation in a Google Cloud Dataflow pipeline for your project. How should you maintain users' privacy?
+A. Grant the consultant the Viewer role on the project.
+B. Grant the consultant the Cloud Dataflow Developer role on the project.
+C. Create a service account and allow the consultant to log on with it.
+D(correct). Create an anonymized sample of the data for the consultant to work with in a different project.
+
+Overall explanation
+D. I wouldn't want to be a consultant who only gets the permissions in B: *This would not allow you to run the pipeline locally, *This would not allow you to verify that the data you're producing is in any way correct. Security-wise, you're also not helping yourself much by choosing B, as the consultant could use the permissions granted to the workers he's controlling to direct the data to a place where he can read it. An anonymized data set put in a separate project solves all of these issues. To reinforce the last point: GCP has recently recognized this by requiring you to to be able to impersonate the controller service account (compute engine default service account by default) if you want to be able to submit jobs. Dataflow Developer alone just won't allow the consultant to run jobs at all.
+
+##### You are building a data pipeline on Google Cloud. You need to prepare data using a casual method for a machine-learning process. You want to support a logistic regression model. You also need to monitor and adjust for null values, which must remain real-valued and cannot be removed. What should you do?
+A. Use Cloud Dataprep to find null values in sample source data. Convert all nulls to "˜none' using a Cloud Dataproc job.
+B(correct). Use Cloud Dataprep to find null values in sample source data. Convert all nulls to 0 using a Cloud Dataprep job.
+C. Use Cloud Dataflow to find null values in sample source data. Convert all nulls to "˜none' using a Cloud Dataprep job.
+D. Use Cloud Dataflow to find null values in sample source data. Convert all nulls to 0 using a custom script.
+
+##### You are developing a software application using Google's Dataflow SDK, and want to use conditional, for loops and other complex programming structures to create a branching pipeline. Which component will be used for the data processing operation?
+A. PCollection
+B(correct). Transform
+C. Pipeline
+D. Sink API
+
+Overall explanation
+In Google Cloud, the Dataflow SDK provides a transform component. It is responsible for the data processing operation. You can use conditional, for loops, and other complex programming structure to create a branching pipeline. Reference: https://cloud.google.com/dataflow/model/programming-model
+
+##### You designed a database for patient records as a pilot project to cover a few hundred patients in three clinics. Your design used a single database table to represent all patients and their visits, and you used self-joins to generate reports. The server resource utilization was at 50%. Since then, the scope of the project has expanded. The database must now store 100 times more patient records. You can no longer run the reports, because they either take too long or they encounter errors with insufficient compute resources. How should you adjust the database design?
+A. Add capacity (memory and disk space) to the database server by the order of 200.
+B. Shard the tables into smaller ones based on date ranges, and only generate reports with prespecified date ranges.
+C(correct). Normalize the master patient-record table into the patient table and the visits table, and create other necessary tables to avoid self-join.
+D. Partition the table into smaller tables, with one for each clinic. Run queries against the smaller table pairs, and use unions for consolidated reports.
+
+Overall explanation
+C is correct because this option provides the least amount of inconvenience over using pre-specified date ranges or one table per clinic while also increasing performance due to avoiding self-joins. A is not correct because adding additional compute resources is not a recommended way to resolve database schema problems. B is not correct because this will reduce the functionality of the database and make running reports more difficult. D is not correct because this will likely increase the number of tables so much that it will be more difficult to generate reports vs. the correct option. https://cloud.google.com/bigquery/docs/best-practices-performance-patterns https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#explicit-alias-visibility
+
+##### Which of the following is not true about Dataflow pipelines?
+A. Pipelines are a set of operations
+B. Pipelines represent a data processing job
+C. Pipelines represent a directed graph of steps
+D(correct). Pipelines can share data between instances
+
+Overall explanation
+The data and transforms in a pipeline are unique to, and owned by, that pipeline. While your program can create multiple pipelines, pipelines cannot share data or transforms
+
+##### You work on a regression problem in a natural language processing domain, and you have 100M labeled exmaples in your dataset. You have randomly shuffled your data and split your dataset into train and test samples (in a 90/10 ratio). After you trained the neural network and evaluated your model on a test set, you discover that the root-mean-squared error (RMSE) of your model is twice as high on the train set as on the test set. How should you improve the performance of your model?
+A. Increase the share of the test sample in the train-test split.
+B. Try to collect more data and increase the size of your dataset.
+C. Try out regularization techniques (e.g., dropout of batch normalization) to avoid overfitting.
+D(correct). Increase the complexity of your model by, e.g., introducing an additional layer or increase sizing the size of vocabularies or n-grams used.
+
+Overall explanation
+D: A is incorrect since test sample is large enough. B is incorrect since dataset is pretty large already, and having more data typically helps with overfitting and not with underfitting. C is incorrect since regularization helps to avoid overfitting and we have a clear underfitting case. D is correct since increasing model complexity generally helps when you have an underfitting problem.
+
+##### Your United States-based company has created an application for assessing and responding to user actions. The primary table's data volume grows by 250,000 records per second. Many third parties use your application's APIs to build the functionality into their own frontend applications. Your application's APIs should comply with the following requirements:✑ Single global endpoint✑ ANSI SQL support✑ Consistent access to the most up-to-date dataWhat should you do?
+A. Implement BigQuery with no region selected for storage or processing.
+B(correct). Implement Cloud Spanner with the leader in North America and read-only replicas in Asia and Europe.
+C. Implement Cloud SQL for PostgreSQL with the master in Norht America and read replicas in Asia and Europe.
+D. Implement Cloud Bigtable with the primary cluster in North America and secondary clusters in Asia and Europe.
+
+Overall explanation
+B: Cloud Spanner is the first scalable, enterprise-grade, globally-distributed, and strongly consistent database service built for the cloud specifically to combine the benefits of relational database structure with non-relational horizontal scale. https://cloud.google.com/spanner/ Cloud Spanner is a fully managed, mission-critical, relational database service that offers transactional consistency at global scale, schemas, SQL (ANSI 2011 with extensions), and automatic, synchronous replication for high availability. https://cloud.google.com/spanner/docs/ https://cloud.google.com/spanner/docs/instances#available-configurations-multi-region
+
+##### You are migrating your data warehouse to BigQuery. You have migrated all of your data into tables in a dataset. Multiple users from your organization will be using the data. They should only see certain tables based on their team membership. How should you set user permissions?
+A(correct). Assign the users/groups data viewer access at the table level for each table
+B. Create SQL views for each team in the same dataset in which the data resides, and assign the users/groups data viewer access to the SQL views
+C. Create authorized views for each team in the same dataset in which the data resides, and assign the users/groups data viewer access to the authorized views
+D. Create authorized views for each team in datasets created for each team. Assign the authorized views data viewer access to the dataset in which the data resides. Assign the users/groups data viewer access to the datasets in which the authorized views reside
+
+Overall explanation
+Correct A: A . Now it is feasible to provide table level access to user by allowing user to query single table and no other table will be visible to user in same dataset.
+
+##### Which software libraries are supported by Cloud Machine Learning Engine?
+A. Theano and TensorFlow
+B. Theano and Torch
+C(correct). TensorFlow
+D. TensorFlow and Torch
+
+Overall explanation
+Cloud ML Engine mainly does two things: Enables you to train machine learning models at scale by running TensorFlow training applications in the cloud. Hosts those trained models for you in the cloud so that you can use them to get predictions about new data. Reference: https://cloud.google.com/ml-engine/docs/technical-overview#what_it_does
+
+##### You need to deploy additional dependencies to all of a Cloud Dataproc cluster at startup using an existing initialization action. Company security policies require that Cloud Dataproc nodes do not have access to the Internet so public initialization actions cannot fetch resources. What should you do?
+A. Deploy the Cloud SQL Proxy on the Cloud Dataproc master
+B. Use an SSH tunnel to give the Cloud Dataproc cluster access to the Internet
+C(correct). Copy all dependencies to a Cloud Storage bucket within your VPC security perimeter
+D. Use Resource Manager to add the service account used by the Cloud Dataproc cluster to the Network User role
+
+Overall explanation
+Correct: C If you create a Dataproc cluster with internal IP addresses only, attempts to access the Internet in an initialization action will fail unless you have configured routes to direct the traffic through a NAT or a VPN gateway. Without access to the Internet, you can enable Private Google Access, and place job dependencies in Cloud Storage; cluster nodes can download the dependencies from Cloud Storage from internal IPs.
+
+##### You are designing a data processing pipeline. The pipeline must be able to scale automatically as load increases. Messages must be processed at least once and must be ordered within windows of 1 hour. How should you design the solution?
+A. Use Apache Kafka for message ingestion and use Cloud Dataproc for streaming analysis.
+B. Use Apache Kafka for message ingestion and use Cloud Dataflow for streaming analysis.
+C. Use Cloud Pub/Sub for message ingestion and Cloud Dataproc for streaming analysis.
+Your answer is correct
+D(correct). Use Cloud Pub/Sub for message ingestion and Cloud Dataflow for streaming analysis.
+
+##### Your company produces 20,000 files every hour. Each data file is formatted as a comma separated values (CSV) file that is less than 4 KB. All files must be ingested on Google Cloud Platform before they can be processed. Your company site has a 200 ms latency to Google Cloud, and your Internet connection bandwidth is limited as 50 Mbps. You currently deploy a secure FTP (SFTP) server on a virtual machine in Google Compute Engine as the data ingestion point. A local SFTP client runs on a dedicated machine to transmit the CSV files as is. The goal is to make reports with data from the previous day available to the executives by 10:00 a.m. each day. This design is barely able to keep up with the current volume, even though the bandwidth utilization is rather low.You are told that due to seasonality, your company expects the number of files to double for the next three months. Which two actions should you take? (Choose two.)
+A. Introduce data compression for each file to increase the rate file of file transfer.
+B. Contact your internet service provider (ISP) to increase your maximum bandwidth to at least 100 Mbps.
+C(correct). Redesign the data ingestion process to use gsutil tool to send the CSV files to a storage bucket in parallel.
+D. Assemble 1,000 files into a tape archive (TAR) file. Transmit the TAR files instead, and disassemble the CSV files in the cloud upon receiving them.
+E(correct). Create an S3-compatible storage endpoint in your network, and use Google Cloud Storage Transfer Service to transfer on-premises data to the designated storage bucket.
+
+Overall explanation
+E cannot be: Transfer Service is recommended for 300mbps or faster https://cloud.google.com/storage-transfer/docs/on-prem-overview Bandwidth is not an issue, so B is not an answer Cloud Storage loading gets better throughput the larger the files are. Therefore making them smaller with compression does not seem a solution. -m option to do parallel work is recommended. Therefore A is not and C is an answer. https://medium.com/@duhroach/optimizing-google-cloud-storage-small-file-upload-performance-ad26530201dc That leaves D as the other option. It is true you cannot user tar directly with gsutil, but you can load the tar file to Cloud Storage, move the file to a Compute Engine instance with Linux, use tar to split files and copy them back to Cloud Storage. Batching many files in a larger tar will improve Cloud Storage throughput. So, given the alternatives, I think answer is CD
+
+##### You are a retailer that wants to integrate your online sales capabilities with different in-home assistants, such as Google Home. You need to interpret customer voice commands and issue an order to the backend systems. Which solutions should you choose?
+A. Cloud Speech-to-Text API
+B. Cloud Natural Language API
+C(correct). Dialogflow Enterprise Edition
+D. Cloud AutoML Natural Language
+
+Overall explanation
+C: Dialogflow Enterprise Edition is an end-to-end development suite for building conversational interfaces for websites, mobile applications, popular messaging platforms, and IoT devices. You can use it to build interfaces (e.g., chatbots) that are capable of natural and rich interactions between your users and your business. It is powered by machine learning to recognize the intent and context of what a user says, allowing your conversational interface to provide highly efficient and accurate responses. https://cloud.google.com/dialogflow/ Dialogflow API V2 is the new iteration of our developer API. The new API integrates Google Cloud Speech-to-Text, enabling developers to send audio directly to Dialogflow for combined speech recognition and natural language understanding. https://dialogflow.com/v2-faq https://cloud.google.com/blog/products/gcp/introducing-dialogflow-enterprise-edition-a-new-way-to-build-voice-and-text-conversational-apps
+
+##### Your company is streaming real-time sensor data from their factory floor into Bigtable and they have noticed extremely poor performance. How should the row key be redesigned to improve Bigtable performance on queries that populate real-time dashboards?
+A. Use a row key of the form <timestamp>.
+B. Use a row key of the form <sensorid>.
+C. Use a row key of the form <timestamp>#<sensorid>.
+D(correct). Use a row key of the form >#<sensorid>#<timestamp>.
+
+Overall explanation
+The correct answer is D. Refer to the link https://cloud.google.com/bigtable/docs/schema-design for Big table schema design. C is not the right answer becuase Timestamps If you often need to retrieve data based on the time when it was recorded, it's a good idea to include a timestamp as part of your row key. Using the timestamp by itself as the row key is not recommended, as most writes would be pushed onto a single node. For the same reason, avoid placing a timestamp at the start of the row key. For example, your application might need to record performance-related data, such as CPU and memory usage, once per second for a large number of machines. Your row key for this data could combine an identifier for the machine with a timestamp for the data (for example, machine_4223421#1425330757685)
+
+##### Your organization has been collecting and analyzing data in Google BigQuery for 6 months. The majority of the data analyzed is placed in a time-partitioned table named events_partitioned. To reduce the cost of queries, your organization created a view called events, which queries only the last 14 days of data. The view is described in legacy SQL. Next month, existing applications will be connecting to BigQuery to read the events data via an ODBC connection. You need to ensure the applications can connect. Which two actions should you take? (Choose two.)
+A. Create a new view over events using standard SQL
+B. Create a new partitioned table using a standard SQL query
+C(correct). Create a new view over events_partitioned using standard SQL
+D(correct). Create a service account for the ODBC connection to use for authentication
+E. Create a Google Cloud Identity and Access Management (Cloud IAM) role for the ODBC connection and shared "events"
+
+Overall explanation
+C = A standard SQL query cannot reference a view defined using legacy SQL syntax. D = For the ODBC drivers is needed a service account which will get a standard Bigquery role
+
+##### Suppose you have a table that includes a nested column called "city" inside a column called "person", but when you try to submit the following query in BigQuery, it gives you an error.SELECT person FROM `project1.example.table1` WHERE city = "London"How would you correct the error?
+A(correct). Add ", UNNEST(person)" before the WHERE clause.
+B. Change "person" to "person.city".
+C. Change "person" to "city.person".
+D. Add ", UNNEST(city)" before the WHERE clause.
+
+Overall explanation
+To access the person.city column, you need to "UNNEST(person)" and JOIN it to table1 using a comma. Reference: https://cloud.google.com/bigquery/docs/reference/standard-sql/migrating-from-legacy-sql#nested_repeated_results
+
+##### You want to use Google Stackdriver Logging to monitor Google BigQuery usage. You need an instant notification to be sent to your monitoring tool when new data is appended to a certain table using an insert job, but you do not want to receive notifications for other tables. What should you do?
+A. Make a call to the Stackdriver API to list all logs, and apply an advanced filter.
+B. In the Stackdriver logging admin interface, and enable a log sink export to BigQuery.
+C. In the Stackdriver logging admin interface, enable a log sink export to Google Cloud Pub/Sub, and subscribe to the topic from your monitoring tool.
+D(correct). Using the Stackdriver API, create a project sink with advanced log filter to export to Pub/Sub, and subscribe to the topic from your monitoring tool.
+
+Overall explanation
+D as the key requirement is to have notification on a particular table. It can be achieved using advanced log filter to filter only the table logs and create a project sink to Cloud Pub/Sub for notification. Refer GCP documentation - Advanced Logs Filters: https://cloud.google.com/logging/docs/view/advanced-queries A is wrong as advanced filter will help in filtering. However, there is no notification sends. B is wrong as it would send all the logs and BigQuery does not provide notifications. C is wrong as it would send all the logs.
+
+##### Your company maintains a hybrid deployment with GCP, where analytics are performed on your anonymized customer data. The data are imported to CloudStorage from your data center through parallel uploads to a data transfer server running on GCP. Management informs you that the daily transfers take too long and have asked you to fix the problem. You want to maximize transfer speeds. Which action should you take?
+A. Increase the CPU size on your server.
+B. Increase the size of the Google Persistent Disk on your server.
+C(correct). Increase your network bandwidth from your datacenter to GCP.
+D. Increase your network bandwidth from Compute Engine to Cloud Storage.
+
+Overall explanation
+Answer: C Description : Speed of data transfer depends on Bandwidth Few things in computing highlight the hardware limitations of networks as transferring large amounts of data. Typically you can transfer 1 GB in eight seconds over a 1 Gbps network. If you scale that up to a huge dataset (for example, 100 TB), the transfer time is 12 days. Transferring huge datasets can test the limits of your infrastructure and potentially cause problems for your business.
+
+##### You are responsible for writing your company's ETL pipelines to run on an Apache Hadoop cluster. The pipeline will require some checkpointing and splitting pipelines. Which method should you use to write the pipelines?
+A(correct). PigLatin using Pig
+B. HiveQL using Hive
+C. Java using MapReduce
+D. Python using MapReduce
+
+Overall explanation
+Option [A] - Pig Latin - Checkpoint & splits: https://books.google.co.in/books?id=daGiDQAAQBAJ&pg=PT128&lpg=PT128&dq=pig+latin+splits+checkpoint&source=bl&ots=zTvVN_7Sh-&sig=ACfU3U1_Aug8U4ZfU7VUl9WG0kf78weHPQ&hl=en&sa=X&ved=2ahUKEwjGq_nz_Z7qAhU4zjgGHd-NCrQQ6AEwAHoECAcQAQ
+
+##### You have Google Cloud Dataflow streaming pipeline running with a Google Cloud Pub/Sub subscription as the source. You need to make an update to the code that will make the new Cloud Dataflow pipeline incompatible with the current version. You do not want to lose any data when making this update. What should you do?
+A(correct). Update the current pipeline and use the drain flag.
+B. Update the current pipeline and provide the transform mapping JSON object.
+C. Create a new pipeline that has the same Cloud Pub/Sub subscription and cancel the old pipeline.
+D. Create a new pipeline that has a new Cloud Pub/Sub subscription and cancel the old pipeline.
+
+Overall explanation
+Correct Option : A Explanation:-This option is correct as the key requirement is not to lose the data, the Dataflow pipeline can be stopped using the Drain option. Drain options would cause Dataflow to stop any new processing, but would also allow the existing processing to complete
