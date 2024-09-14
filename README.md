@@ -114,7 +114,7 @@ https://www.coursera.org/learn/preparing-cloud-professional-data-engineer-exam/s
 
 
 ### Section 2: Building and maintaining data structures and databases
-**2.1 Building and maintaining flexible data representations**
+**2.1 Building and maintaining flexible data representations.**
 
 **2.2 Building and maintaining pipelines. Considerations include:**
 
