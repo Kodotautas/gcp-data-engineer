@@ -37,7 +37,7 @@ Cloud Dataprep is Google's self-service data preparation tool. In this lab, you 
 
 ### [Simulating a Data Warehouse in the Cloud Using BigQuery and Dataflow](https://google.qwiklabs.com/focuses/3506?parent=catalog)
 
-In this lab you build several Data Pipelines that will ingest data from the USA Babynames dataset into BigQuery, simulating a batch transformation
+In this lab you build several Data Pipelines that will ingest data from the USA Babynames dataset into BigQuery, simulating a batch transformation.
 
 ### [Predict Visitor Purchases with a Classification Model in BQML](https://google.qwiklabs.com/focuses/1794?parent=catalog)
 
